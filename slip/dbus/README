@@ -1,0 +1,9 @@
+This package contains slip.dbus.service.TimeoutObject which easily allows to
+create dbus-activated services which end themselves when its clients disconnect
+from the bus.
+
+This is helpful if you want your service to survive along with its client(s)
+because it e.g. contains non-trivial state, does other things on startup
+which are expensive in some way or monitors other things and notifies dbus
+clients about it.
+

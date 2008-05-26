@@ -1,0 +1,15 @@
+#!/usr/bin/python
+
+from distutils.core import setup
+
+setup (
+        name = "slip.dbus",
+        version = "@VERSION@",
+        py_modules = ["slip.dbus.service"]
+   )
+
+setup (
+        name = "slip.gtk",
+        version = "@VERSION@",
+        py_modules = ["slip.gtk"]
+   )

@@ -1,0 +1,4 @@
+To check out this example, run example_service.py from one shell and
+example_client.py from another. The client will query the service 3 times with
+a short delay in between and then exit. The service should exit shortly
+afterwards.

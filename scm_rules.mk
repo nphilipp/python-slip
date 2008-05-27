@@ -1,3 +1,6 @@
+# License: GPL v2 or later
+# Copyright Red Hat Inc. 2008
+
 ifndef SCM_REMOTE_BRANCH
 	SCM_REMOTE_BRANCH = dummy
 endif

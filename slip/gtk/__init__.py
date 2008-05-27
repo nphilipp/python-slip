@@ -20,17 +20,19 @@
 
 import gtk, pango
 
+__all__ = ["label_set_autowrap"]
+
 ### set autowrapping for all labels in this widget tree
-def set_autowrap(widget):
+def label_set_autowrap(widget):
     if isinstance(widget, gtk.Container):
         children = widget.get_children()
         for i in xrange(len(children)):
             set_autowrap(children[i])
     elif isinstance(widget, gtk.Label) and widget.get_line_wrap():
-        widget.connect_after("size-allocate", label_size_allocate)
+        widget.connect_after("size-allocate", __label_size_allocate)
 
 ### set wrap width to the pango.Layout of the labels ###
-def label_size_allocate(widget, allocation):
+def __label_size_allocate(widget, allocation):
     layout = widget.get_layout()
 
     lw_old, lh_old = layout.get_size()

@@ -5,11 +5,14 @@ from distutils.core import setup
 setup (
         name = "slip.dbus",
         version = "@VERSION@",
-        py_modules = ["slip.dbus.service"]
+        py_modules = [
+            "slip.dbus.__init__",
+            "slip.dbus.service"
+            ]
    )
 
 setup (
         name = "slip.gtk",
         version = "@VERSION@",
-        py_modules = ["slip.gtk"]
+        py_modules = ["slip.gtk.__init__"]
    )

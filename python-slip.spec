@@ -76,9 +76,13 @@ rm -rf %buildroot
 
 %files gtk
 %defattr(-,root,root,-)
-%{python_sitelib}/slip/gtk.py*
+%{python_sitelib}/slip/gtk
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Tue May 27 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1
+- move gtk.py -> gtk/__init__.py
+- rename gtk.set_autowrap () -> gtk.label_autowrap ()
+
 * Mon May 26 2008 Nils Philippsen <nphilipp@redhat.com>
 - initial build

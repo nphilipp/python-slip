@@ -45,7 +45,7 @@ class SomeObject(slip.dbus.service.TimeoutObject):
     @dbus.service.method("org.fedoraproject.slip.Example.SampleInterface",
                          in_signature='s', out_signature='as')
     def HelloWorld(self, hello_message):
-        return ["Hello", " from example-service.py", "with unique name",
+        return ["Hello", " from example_service.py", "with unique name",
                 system_bus.get_unique_name()]
 
     @dbus.service.method("org.fedoraproject.slip.Example.SampleInterface",
@@ -57,12 +57,12 @@ class SomeObject(slip.dbus.service.TimeoutObject):
     @dbus.service.method("org.fedoraproject.slip.Example.SampleInterface",
                          in_signature='', out_signature='(ss)')
     def GetTuple(self):
-        return ("Hello Tuple", " from example-service.py")
+        return ("Hello Tuple", " from example_service.py")
 
     @dbus.service.method("org.fedoraproject.slip.Example.SampleInterface",
                          in_signature='', out_signature='a{ss}')
     def GetDict(self):
-        return {"first": "Hello Dict", "second": " from example-service.py"}
+        return {"first": "Hello Dict", "second": " from example_service.py"}
 
 if __name__ == '__main__':
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)

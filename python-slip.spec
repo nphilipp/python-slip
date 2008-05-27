@@ -67,6 +67,7 @@ rm -rf %buildroot
 %doc COPYING
 %dir %{python_sitelib}/slip/
 %{python_sitelib}/slip/__init__.py*
+%{python_sitelib}/slip-%{version}-py%{python_version}.egg-info
 
 %files dbus
 %defattr(-,root,root,-)

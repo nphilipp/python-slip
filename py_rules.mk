@@ -9,21 +9,25 @@ ifndef PY_SOURCES
 	PY_SOURCES = $(wildcard src/*.py)
 endif
 
-setup.py:	setup.py.in $(PKGNAME).spec
+ifndef SETUP_PY
+	SETUP_PY = setup.py
+endif
+
+$(SETUP_PY):	$(SETUP_PY).in $(PKGNAME).spec
 	sed -e 's/@VERSION@/$(PKGVERSION)/g' < $< > $@
 
-py-build-ext:	setup.py $(PY_SOURCES)
-	python setup.py build_ext -i
+py-build-ext:	$(SETUP_PY) $(PY_SOURCES)
+	python $(SETUP_PY) build_ext -i
 
-py-build:   setup.py $(PY_SOURCES)
-	python setup.py build
+py-build:   $(SETUP_PY) $(PY_SOURCES)
+	python $(SETUP_PY) build
 
 py-install:
-	python setup.py install -O1 --skip-build --root $(DESTDIR)
+	python $(SETUP_PY) install -O1 --skip-build --root $(DESTDIR)
 
 py-clean:
-	python setup.py clean
-	rm -f setup.py
+	python $(SETUP_PY) clean
+	rm -f $(SETUP_PY)
 
 py-check:
 	pychecker -F pycheckrc $(PY_SOURCES)

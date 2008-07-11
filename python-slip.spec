@@ -23,10 +23,10 @@ convenience, extension and workaround purposes.
 This package provides the "slip" base module.
 
 %package dbus
-Summary:	Convenience functions for dbus-activated services
-Group:	    System Environment/Libraries
+Summary:    Convenience functions for dbus-activated services
+Group:      System Environment/Libraries
 Requires:   %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:	dbus-python >= 0.80
+Requires:   dbus-python >= 0.80
 
 %description dbus
 The Simple Library for Python packages contain miscellaneous code for
@@ -37,10 +37,10 @@ derivative that ends itself after a certain time without being used and/or if
 there are no clients anymore on the message bus.
 
 %package gtk
-Summary:	Code to make auto-wrapping gtk labels
-Group:	    System Environment/Libraries
+Summary:    Code to make auto-wrapping gtk labels
+Group:      System Environment/Libraries
 Requires:   %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:	pygtk2
+Requires:   pygtk2
 
 %description gtk
 The Simple Library for Python packages contain miscellaneous code for
@@ -81,6 +81,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Fri Jul 11 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.2
+- fix more inconsistent tabs/spaces
+
 * Fri Jul 11 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.1
 - fix inconsistent tabs/spaces
 

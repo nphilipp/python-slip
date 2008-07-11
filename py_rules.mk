@@ -13,30 +13,30 @@ ifndef SETUP_PY
 	SETUP_PY = setup.py
 endif
 
-ifndef PY_SRC_DIR
-	PY_SRC_DIR = $(abspath $(dir $(abspath $(MAKEFILE))))
+ifndef PY_TOPDIR
+	PY_TOPDIR = $(abspath $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 endif
 
-_SETUP_PY = $(PY_SRC_DIR)/$(SETUP_PY)
+_SETUP_PY = $(PY_TOPDIR)/$(SETUP_PY)
 
 $(_SETUP_PY):	$(_SETUP_PY).in $(PKGNAME).spec
-	cd $(PY_SRC_DIR); \
+	cd $(PY_TOPDIR); \
 	sed -e 's/@VERSION@/$(PKGVERSION)/g' < $< > $@
 
 py-build-ext:	$(_SETUP_PY) $(PY_SOURCES)
-	cd $(PY_SRC_DIR); \
+	cd $(PY_TOPDIR); \
 	python $(SETUP_PY) build_ext -i
 
 py-build:   $(_SETUP_PY) $(PY_SOURCES)
-	cd $(PY_SRC_DIR); \
+	cd $(PY_TOPDIR); \
 	python $(SETUP_PY) build
 
 py-install:	$(_SETUP_PY)
-	cd $(PY_SRC_DIR); \
+	cd $(PY_TOPDIR); \
 	python $(SETUP_PY) install -O1 --skip-build --root $(DESTDIR)
 
 py-clean:	$(_SETUP_PY)
-	cd $(PY_SRC_DIR); \
+	cd $(PY_TOPDIR); \
 	python $(SETUP_PY) clean; \
 	rm -f $(SETUP_PY)
 

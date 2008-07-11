@@ -2,19 +2,19 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(0)")}
 %{!?python_version: %define python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
-Name:		python-slip
-Version:	0.1
-Release:	1%{?dist}
-Summary:	Miscellaneous convenience, extension and workaround code for Python
+Name:       python-slip
+Version:    0.1
+Release:    1%{?dist}
+Summary:    Miscellaneous convenience, extension and workaround code for Python
 
-Group:	    System Environment/Libraries
-License:	GPLv2+
-URL:		http://nphilipp.fedorapeople.org/python-slip/
-Source0:	http://nphilipp.fedorapeople.org/python-slip/%{name}-%{version}.tar.bz2
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Group:      System Environment/Libraries
+License:    GPLv2+
+URL:        http://nphilipp.fedorapeople.org/python-slip/
+Source0:    http://nphilipp.fedorapeople.org/python-slip/%{name}-%{version}.tar.bz2
+BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:  noarch
 
-BuildRequires:	python
+BuildRequires:  python
 
 %description
 The Simple Library for Python packages contain miscellaneous code for
@@ -81,6 +81,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Fri Jul 11 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.1
+- fix inconsistent tabs/spaces
+
 * Tue May 27 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1
 - move gtk.py -> gtk/__init__.py
 - rename gtk.set_autowrap () -> gtk.label_autowrap ()

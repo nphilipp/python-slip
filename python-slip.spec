@@ -3,7 +3,7 @@
 %{!?python_version: %define python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.1.2
+Version:    0.1.3
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -15,6 +15,7 @@ BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:  noarch
 
 BuildRequires:  python
+BuildRequires:  python-devel
 
 %description
 The Simple Library for Python packages contain miscellaneous code for
@@ -81,6 +82,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Fri Jul 11 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.3
+- BR: python-devel
+
 * Fri Jul 11 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.2
 - fix more inconsistent tabs/spaces
 

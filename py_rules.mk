@@ -13,6 +13,10 @@ ifndef SETUP_PY
 	SETUP_PY = setup.py
 endif
 
+ifndef PY_SRC_DIR
+	PY_SRC_DIR = $(abspath $(dir $(abspath $(MAKEFILE))))
+endif
+
 _SETUP_PY = $(PY_SRC_DIR)/$(SETUP_PY)
 
 $(_SETUP_PY):	$(_SETUP_PY).in $(PKGNAME).spec

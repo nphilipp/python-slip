@@ -13,20 +13,27 @@ ifndef SETUP_PY
 	SETUP_PY = setup.py
 endif
 
-$(SETUP_PY):	$(SETUP_PY).in $(PKGNAME).spec
+_SETUP_PY = $(PY_SRC_DIR)/$(SETUP_PY)
+
+$(_SETUP_PY):	$(_SETUP_PY).in $(PKGNAME).spec
+	cd $(PY_SRC_DIR); \
 	sed -e 's/@VERSION@/$(PKGVERSION)/g' < $< > $@
 
-py-build-ext:	$(SETUP_PY) $(PY_SOURCES)
+py-build-ext:	$(_SETUP_PY) $(PY_SOURCES)
+	cd $(PY_SRC_DIR); \
 	python $(SETUP_PY) build_ext -i
 
-py-build:   $(SETUP_PY) $(PY_SOURCES)
+py-build:   $(_SETUP_PY) $(PY_SOURCES)
+	cd $(PY_SRC_DIR); \
 	python $(SETUP_PY) build
 
-py-install:
+py-install:	$(_SETUP_PY)
+	cd $(PY_SRC_DIR); \
 	python $(SETUP_PY) install -O1 --skip-build --root $(DESTDIR)
 
-py-clean:
-	python $(SETUP_PY) clean
+py-clean:	$(_SETUP_PY)
+	cd $(PY_SRC_DIR); \
+	python $(SETUP_PY) clean; \
 	rm -f $(SETUP_PY)
 
 py-check:

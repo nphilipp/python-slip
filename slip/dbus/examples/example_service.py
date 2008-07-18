@@ -34,7 +34,7 @@ except ImportError:
 class DemoException(dbus.DBusException):
     _dbus_error_name = 'org.fedoraproject.slip.Example.DemoException'
 
-class SomeObject(slip.dbus.service.TimeoutObject):
+class SomeObject(slip.dbus.service.Object):
     def __init__ (self, *p, **k):
         super (SomeObject, self).__init__ (*p, **k)
         print "service object constructed"

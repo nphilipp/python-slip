@@ -27,7 +27,7 @@ import dbus.service
 
 import gobject
 
-__all__ = ['TimeoutObject', 'TimeoutObjectType', 'set_mainloop']
+__all__ = ['Object', 'InterfaceType', 'set_mainloop']
 
 __mainloop__ = None
 
@@ -88,7 +88,7 @@ def wrap_method (method):
 
     return wrapped_method
 
-class TimeoutObjectType (dbus.service.InterfaceType):
+class InterfaceType (dbus.service.InterfaceType):
     def __new__ (cls, name, bases, dct):
         for attrname, attr in dct.iteritems ():
             if getattr (attr, "_dbus_is_method", False):
@@ -96,11 +96,11 @@ class TimeoutObjectType (dbus.service.InterfaceType):
                 dct[attrname] = wrap_method (attr)
                 #print "wrapped method:", dct[attrname]
         #print "dct:", dct
-        return super (TimeoutObjectType, cls).__new__ (cls, name, bases, dct)
+        return super (InterfaceType, cls).__new__ (cls, name, bases, dct)
 
 
-class TimeoutObject (dbus.service.Object):
-    __metaclass__ = TimeoutObjectType
+class Object (dbus.service.Object):
+    __metaclass__ = InterfaceType
 
     live_with_senders = False
     default_duration = 5
@@ -113,48 +113,48 @@ class TimeoutObject (dbus.service.Object):
 
     @classmethod
     def _timeout_cb (cls):
-        if len (TimeoutObject.senders) == 0:
+        if len (Object.senders) == 0:
             quit_cb ()
             return False
 
-        TimeoutObject.current_source = None
-        TimeoutObject.duration = cls.default_duration
+        Object.current_source = None
+        Object.duration = cls.default_duration
 
         return False
 
     def _name_owner_changed (self, name, old_owner, new_owner):
         conn = self.connection
 
-        if not new_owner and (old_owner, conn) in TimeoutObject.senders:
-            TimeoutObject.senders.remove ((old_owner, conn))
-            TimeoutObject.connections_senders[conn].remove (old_owner)
+        if not new_owner and (old_owner, conn) in Object.senders:
+            Object.senders.remove ((old_owner, conn))
+            Object.connections_senders[conn].remove (old_owner)
 
-            if len (TimeoutObject.connections_senders[conn]) == 0:
-                TimeoutObject.connections_smobjs[conn].remove ()
-                del TimeoutObject.connections_senders[conn]
-                del TimeoutObject.connections_smobjs[conn]
+            if len (Object.connections_senders[conn]) == 0:
+                Object.connections_smobjs[conn].remove ()
+                del Object.connections_senders[conn]
+                del Object.connections_smobjs[conn]
 
-            if len (TimeoutObject.senders) == 0 and TimeoutObject.current_source == None:
+            if len (Object.senders) == 0 and Object.current_source == None:
                 quit_cb ()
 
     def timeout_restart (self, duration = None):
         if not duration:
             duration = self.__class__.default_duration
-        if not TimeoutObject.duration or duration > TimeoutObject.duration:
-            TimeoutObject.duration = duration
-        if not TimeoutObject.live_with_senders or len (TimeoutObject.senders) == 0:
-            if TimeoutObject.current_source:
-                gobject.source_remove (TimeoutObject.current_source)
-            TimeoutObject.current_source = gobject.timeout_add (TimeoutObject.duration * 1000, self.__class__._timeout_cb)
+        if not Object.duration or duration > Object.duration:
+            Object.duration = duration
+        if not Object.live_with_senders or len (Object.senders) == 0:
+            if Object.current_source:
+                gobject.source_remove (Object.current_source)
+            Object.current_source = gobject.timeout_add (Object.duration * 1000, self.__class__._timeout_cb)
 
     def sender_seen (self, sender):
-        if (sender, self.connection) not in TimeoutObject.senders:
-            TimeoutObject.senders.add ((sender, self.connection))
-            if self.connection not in TimeoutObject.connections_senders.keys ():
-                TimeoutObject.connections_senders[self.connection] = set ()
-                TimeoutObject.connections_smobjs[self.connection] = \
+        if (sender, self.connection) not in Object.senders:
+            Object.senders.add ((sender, self.connection))
+            if self.connection not in Object.connections_senders.keys ():
+                Object.connections_senders[self.connection] = set ()
+                Object.connections_smobjs[self.connection] = \
                         self.connection.add_signal_receiver (
                                 handler_function = self._name_owner_changed,
                                 signal_name = "NameOwnerChanged",
                                 dbus_interface = "org.freedesktop.DBus")
-            TimeoutObject.connections_senders[self.connection].add (sender)
+            Object.connections_senders[self.connection].add (sender)

@@ -27,7 +27,9 @@ import dbus.service
 
 import gobject
 
-__all__ = ['Object', 'InterfaceType', 'set_mainloop', 'polkit_auth_required']
+import polkit
+
+__all__ = ['Object', 'InterfaceType', 'set_mainloop']
 
 __mainloop__ = None
 
@@ -52,36 +54,8 @@ def quit_cb ():
 
 SENDER_KEYWORD = "__slip_dbus_service_sender__"
 
-class PolKit (object):
-    @property
-    def _systembus (self):
-        if not hasattr (PolKit, "__systembus"):
-            PolKit.__systembus = dbus.SystemBus ()
-        return PolKit.__systembus
-
-    @property
-    def _dbusobj (self):
-        if not hasattr (PolKit, "__dbusobj"):
-            PolKit.__dbusobj = self._systembus.get_object ("org.freedesktop.PolicyKit", "/")
-        return PolKit.__dbusobj
-
-    class NotAuthorized (dbus.DBusException):
-        _dbus_error_name = "org.fedoraproject.slip.dbus.service.PolKit.NotAuthorized"
-
-    def IsSystemBusNameAuthorized (self, system_bus_name, action_id):
-        revoke_if_one_shot = True
-        return self._dbusobj.IsSystemBusNameAuthorized (action_id, system_bus_name, revoke_if_one_shot, dbus_interface = "org.freedesktop.PolicyKit")
-
-    def IsProcessAuthorized (self, pid, action_id):
-        revoke_if_one_shot = True
-        return self._dbusobj.IsSystemBusNameAuthorized (action_id, pid, revoke_if_one_shot, dbus_interface = "org.freedesktop.PolicyKit")
-
-polkit = PolKit ()
-
 def wrap_method (method):
     global SENDER_KEYWORD
-
-    #print "method.__dict__:", method.__dict__
 
     if method._dbus_sender_keyword != None:
         sender_keyword = method._dbus_sender_keyword
@@ -101,7 +75,7 @@ def wrap_method (method):
             if authorized != "yes":
                 # leave 120 secs time to acquire authorization
                 self.timeout_restart (duration = 120)
-                raise PolKit.NotAuthorized (action_id = action_id, authorized = authorized)
+                raise polkit.NotAuthorized (action_id)
 
         if hide_sender_keyword:
             del k[sender_keyword]
@@ -120,7 +94,6 @@ def wrap_method (method):
         #delattr (method, attr)
 
     wrapped_method.func_name = method.func_name
-    #print "wrapped_method.__dict__:", wrapped_method.__dict__
 
     return wrapped_method
 
@@ -128,19 +101,8 @@ class InterfaceType (dbus.service.InterfaceType):
     def __new__ (cls, name, bases, dct):
         for attrname, attr in dct.iteritems ():
             if getattr (attr, "_dbus_is_method", False):
-                #print "method:", attr
                 dct[attrname] = wrap_method (attr)
-                #print "wrapped method:", dct[attrname]
-        #print "dct:", dct
         return super (InterfaceType, cls).__new__ (cls, name, bases, dct)
-
-def polkit_auth_required (polkit_auth):
-    def polkit_auth_require (method):
-        assert hasattr (method, "_dbus_is_method")
-
-        setattr (method, "_slip_polkit_auth_required", polkit_auth)
-        return method
-    return polkit_auth_require
 
 class Object (dbus.service.Object):
     __metaclass__ = InterfaceType

@@ -38,7 +38,8 @@ py-install:	$(_SETUP_PY)
 py-clean:	$(_SETUP_PY)
 	cd $(PY_TOPDIR); \
 	python $(SETUP_PY) clean; \
-	rm -f $(SETUP_PY)
+	rm -f $(SETUP_PY); \
+	rm -rf build
 
 py-check:
 	pychecker -F pycheckrc $(PY_SOURCES)

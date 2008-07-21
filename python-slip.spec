@@ -3,7 +3,7 @@
 %{!?python_version: %define python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.1.3
+Version:    0.1.4
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -24,18 +24,20 @@ convenience, extension and workaround purposes.
 This package provides the "slip" base module.
 
 %package dbus
-Summary:    Convenience functions for dbus-activated services
+Summary:    Convenience functions for dbus services
 Group:      System Environment/Libraries
 Requires:   %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:   dbus-python >= 0.80
+Requires:   PolicyKit >= 0.8-3
 
 %description dbus
 The Simple Library for Python packages contain miscellaneous code for
 convenience, extension and workaround purposes.
 
-This package provides slip.dbus.service.TimeoutObject, a dbus.service.Object
+This package provides slip.dbus.service.Object, which is a dbus.service.Object
 derivative that ends itself after a certain time without being used and/or if
-there are no clients anymore on the message bus.
+there are no clients anymore on the message bus, as well as convenience
+functions and decorators for integrating a dbus service with PolicyKit.
 
 %package gtk
 Summary:    Code to make auto-wrapping gtk labels
@@ -82,6 +84,10 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Mon Jul 21 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.4
+- implement PolicyKit convenience functions and decorators
+- rename slip.dbus.service.TimeoutObject -> slip.dbus.service.Object
+
 * Fri Jul 11 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.3
 - BR: python-devel
 

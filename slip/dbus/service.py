@@ -52,21 +52,21 @@ def quit_cb ():
 
 SENDER_KEYWORD = "__slip_dbus_service_sender__"
 
-class Polkit (object):
+class PolKit (object):
     @property
     def _systembus (self):
-        if not hasattr (Polkit, "__systembus"):
-            Polkit.__systembus = dbus.SystemBus ()
-        return Polkit.__systembus
+        if not hasattr (PolKit, "__systembus"):
+            PolKit.__systembus = dbus.SystemBus ()
+        return PolKit.__systembus
 
     @property
     def _dbusobj (self):
-        if not hasattr (Polkit, "__dbusobj"):
-            Polkit.__dbusobj = self._systembus.get_object ("org.freedesktop.PolicyKit", "/")
-        return Polkit.__dbusobj
+        if not hasattr (PolKit, "__dbusobj"):
+            PolKit.__dbusobj = self._systembus.get_object ("org.freedesktop.PolicyKit", "/")
+        return PolKit.__dbusobj
 
-    class NotAuthorized (Exception):
-        pass
+    class NotAuthorized (dbus.DBusException):
+        _dbus_error_name = "org.fedoraproject.slip.dbus.service.PolKit.NotAuthorized"
 
     def IsSystemBusNameAuthorized (self, system_bus_name, action_id):
         revoke_if_one_shot = True
@@ -76,7 +76,7 @@ class Polkit (object):
         revoke_if_one_shot = True
         return self._dbusobj.IsSystemBusNameAuthorized (action_id, pid, revoke_if_one_shot, dbus_interface = "org.freedesktop.PolicyKit")
 
-polkit = Polkit ()
+polkit = PolKit ()
 
 def wrap_method (method):
     global SENDER_KEYWORD
@@ -101,7 +101,7 @@ def wrap_method (method):
             if authorized != "yes":
                 # leave 120 secs time to acquire authorization
                 self.timeout_restart (duration = 120)
-                raise Polkit.NotAuthorized (authorized)
+                raise PolKit.NotAuthorized (action_id = action_id, authorized = authorized)
 
         if hide_sender_keyword:
             del k[sender_keyword]

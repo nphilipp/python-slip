@@ -27,7 +27,7 @@ import dbus.service
 
 import gobject
 
-__all__ = ['Object', 'InterfaceType', 'set_mainloop']
+__all__ = ['Object', 'InterfaceType', 'set_mainloop', 'polkit_auth_required']
 
 __mainloop__ = None
 
@@ -52,6 +52,32 @@ def quit_cb ():
 
 SENDER_KEYWORD = "__slip_dbus_service_sender__"
 
+class Polkit (object):
+    @property
+    def _systembus (self):
+        if not hasattr (Polkit, "__systembus"):
+            Polkit.__systembus = dbus.SystemBus ()
+        return Polkit.__systembus
+
+    @property
+    def _dbusobj (self):
+        if not hasattr (Polkit, "__dbusobj"):
+            Polkit.__dbusobj = self._systembus.get_object ("org.freedesktop.PolicyKit", "/")
+        return Polkit.__dbusobj
+
+    class NotAuthorized (Exception):
+        pass
+
+    def IsSystemBusNameAuthorized (self, system_bus_name, action_id):
+        revoke_if_one_shot = True
+        return self._dbusobj.IsSystemBusNameAuthorized (action_id, system_bus_name, revoke_if_one_shot, dbus_interface = "org.freedesktop.PolicyKit")
+
+    def IsProcessAuthorized (self, pid, action_id):
+        revoke_if_one_shot = True
+        return self._dbusobj.IsSystemBusNameAuthorized (action_id, pid, revoke_if_one_shot, dbus_interface = "org.freedesktop.PolicyKit")
+
+polkit = Polkit ()
+
 def wrap_method (method):
     global SENDER_KEYWORD
 
@@ -66,6 +92,16 @@ def wrap_method (method):
 
     def wrapped_method (self, *p, **k):
         self.sender_seen (k[sender_keyword])
+
+        action_id = getattr (method, "_slip_polkit_auth_required", None)
+        if not action_id:
+            action_id = getattr (self, "default_polkit_auth_required", None)
+        if action_id:
+            authorized = polkit.IsSystemBusNameAuthorized (k[sender_keyword], action_id)
+            if authorized != "yes":
+                # leave 120 secs time to acquire authorization
+                self.timeout_restart (duration = 120)
+                raise Polkit.NotAuthorized (authorized)
 
         if hide_sender_keyword:
             del k[sender_keyword]
@@ -98,11 +134,19 @@ class InterfaceType (dbus.service.InterfaceType):
         #print "dct:", dct
         return super (InterfaceType, cls).__new__ (cls, name, bases, dct)
 
+def polkit_auth_required (polkit_auth):
+    def polkit_auth_require (method):
+        assert hasattr (method, "_dbus_is_method")
+
+        setattr (method, "_slip_polkit_auth_required", polkit_auth)
+        return method
+    return polkit_auth_require
 
 class Object (dbus.service.Object):
     __metaclass__ = InterfaceType
 
-    live_with_senders = False
+    # timeout & persistence
+    persistent = False
     default_duration = 5
     duration = default_duration
     current_source = None
@@ -110,6 +154,9 @@ class Object (dbus.service.Object):
     senders = set ()
     connections_senders = {}
     connections_smobjs = {}
+
+    # PolicyKit
+    default_polkit_auth_required = None
 
     @classmethod
     def _timeout_cb (cls):
@@ -142,7 +189,7 @@ class Object (dbus.service.Object):
             duration = self.__class__.default_duration
         if not Object.duration or duration > Object.duration:
             Object.duration = duration
-        if not Object.live_with_senders or len (Object.senders) == 0:
+        if not Object.persistent or len (Object.senders) == 0:
             if Object.current_source:
                 gobject.source_remove (Object.current_source)
             Object.current_source = gobject.timeout_add (Object.duration * 1000, self.__class__._timeout_cb)

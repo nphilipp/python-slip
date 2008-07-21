@@ -42,6 +42,7 @@ class SomeObject(slip.dbus.service.Object):
     def __del__ (self):
         print "service object deleted"
 
+    @slip.dbus.service.polkit_auth_required ("org.gnome.policykit.examples.twiddle")
     @dbus.service.method("org.fedoraproject.slip.Example.SampleInterface",
                          in_signature='s', out_signature='as')
     def HelloWorld(self, hello_message):
@@ -67,8 +68,7 @@ class SomeObject(slip.dbus.service.Object):
 if __name__ == '__main__':
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
-    # with a real service, this may also be a dbus.SystemBus instead
-    system_bus = dbus.SessionBus ()
+    system_bus = dbus.SystemBus ()
 
     name = dbus.service.BusName("org.fedoraproject.slip.Example", system_bus)
     object = SomeObject(system_bus, '/org/fedoraproject/slip/Example/SomeObject')

@@ -3,7 +3,7 @@
 %{!?python_version: %define python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.1.4
+Version:    0.1.5
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -84,6 +84,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Tue Jul 22 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.5
+- don't reset timeout on failed polkit authorizations
+
 * Mon Jul 21 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.4
 - implement PolicyKit convenience functions and decorators
 - rename slip.dbus.service.TimeoutObject -> slip.dbus.service.Object

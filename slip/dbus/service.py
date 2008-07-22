@@ -73,8 +73,6 @@ def wrap_method (method):
         if action_id:
             authorized = polkit.IsSystemBusNameAuthorized (k[sender_keyword], action_id)
             if authorized != "yes":
-                # leave 120 secs time to acquire authorization
-                self.timeout_restart (duration = 120)
                 raise polkit.NotAuthorized (action_id)
 
         if hide_sender_keyword:

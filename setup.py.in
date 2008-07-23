@@ -14,7 +14,6 @@ setup (
         py_modules = [
             "slip.dbus.__init__",
             "slip.dbus.polkit",
-            "slip.dbus.proxy",
             "slip.dbus.service"
             ]
         )

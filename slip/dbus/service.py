@@ -73,7 +73,7 @@ def wrap_method (method):
         if action_id:
             authorized = polkit.IsSystemBusNameAuthorized (k[sender_keyword], action_id)
             if authorized != "yes":
-                raise polkit.NotAuthorized (action_id)
+                raise polkit.NotAuthorizedException (action_id)
 
         if hide_sender_keyword:
             del k[sender_keyword]

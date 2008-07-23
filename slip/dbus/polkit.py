@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# slip.dbus.polkit -- convenience functions for using PolicyKit with dbus
-# services
+# slip.dbus.polkit -- convenience decorators and functions for using PolicyKit
+# with dbus services and clients
 #
 # Copyright © 2008 Red Hat, Inc.
 #
@@ -20,18 +20,56 @@
 #
 # Authors: Nils Philippsen <nphilipp@redhat.com>
 
-"""This module contains convenience functions for using PolicyKit with dbus
-services."""
+"""This module contains convenience decorators and functions for using
+PolicyKit with dbus services and clients."""
 
+import os
 import dbus
 
-__all__ = ['auth_required', 'IsSystemBusNameAuthorized', 'IsProcessAuthorized']
+__all__ = ["require_auth", "enable_proxy", "NotAuthorizedException", "IsSystemBusNameAuthorized", "IsProcessAuthorized"]
 
-class NotAuthorized (dbus.DBusException):
-    _dbus_error_name = "org.fedoraproject.slip.dbus.service.PolKit.NotAuthorized"
+def require_auth (polkit_auth):
+    def require_auth_decorator (method):
+        assert hasattr (method, "_dbus_is_method")
+
+        setattr (method, "_slip_polkit_auth_required", polkit_auth)
+        return method
+    return require_auth_decorator
+
+EXC_NAME = "org.fedoraproject.slip.dbus.service.PolKit.NotAuthorizedException"
+
+def enable_proxy (func):
+    def enable_proxy_wrapper (*p, **k):
+        sessionbus = None
+        authobj = None
+        retval = None
+
+        try:
+            return func (*p, **k)
+        except dbus.DBusException, e:
+            exc_name = e.get_dbus_name ()
+            if exc_name.startswith (EXC_NAME + "."):
+                if not sessionbus:
+                    sessionbus = dbus.SessionBus ()
+                    authobj = sessionbus.get_object ("org.freedesktop.PolicyKit.AuthenticationAgent", "/")
+
+                action_id = exc_name[len (EXC_NAME)+1:]
+                obtained = authobj.ObtainAuthorization (action_id, dbus.UInt32 (0),
+                        dbus.UInt32 (os.getpid ()),
+                        dbus_interface = "org.freedesktop.PolicyKit.AuthenticationAgent")
+                if not obtained:
+                    raise
+            else:
+                raise
+
+        return func (*p, **k)
+    return enable_proxy_wrapper
+
+class NotAuthorizedException (dbus.DBusException):
+    _dbus_error_name = "org.fedoraproject.slip.dbus.service.PolKit.NotAuthorizedException"
     def __init__ (self, action_id, *p, **k):
         self._dbus_error_name = self.__class__._dbus_error_name + "." + action_id
-        super (NotAuthorized, self).__init__ (*p, **k)
+        super (NotAuthorizedException, self).__init__ (*p, **k)
 
 class PolKit (object):
     @property
@@ -61,11 +99,3 @@ def IsSystemBusNameAuthorized (system_bus_name, action_id):
 
 def IsProcessAuthorized (pid, action_id):
     return __polkit.IsProcessAuthorized (pid, action_id)
-
-def auth_required (polkit_auth):
-    def polkit_auth_require (method):
-        assert hasattr (method, "_dbus_is_method")
-
-        setattr (method, "_slip_polkit_auth_required", polkit_auth)
-        return method
-    return polkit_auth_require

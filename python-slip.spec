@@ -3,7 +3,7 @@
 %{!?python_version: %define python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.1.6
+Version:    0.1.7
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -84,6 +84,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Thu Jul 24 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.7
+- fix import error (#456511)
+
 * Wed Jul 23 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.6
 - move proxy.polkit_enable to polkit.enable_proxy
 - rename polkit.NotAuthorized to NotAuthorizedException, polkit.auth_required

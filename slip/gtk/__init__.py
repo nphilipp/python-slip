@@ -23,26 +23,26 @@ import gtk, pango
 __all__ = ["label_set_autowrap"]
 
 ### set autowrapping for all labels in this widget tree
-def label_set_autowrap(widget):
-    if isinstance(widget, gtk.Container):
-        children = widget.get_children()
-        for i in xrange(len(children)):
-            label_set_autowrap(children[i])
-    elif isinstance(widget, gtk.Label) and widget.get_line_wrap():
-        widget.connect_after("size-allocate", __label_size_allocate)
+def label_set_autowrap (widget):
+    if isinstance (widget, gtk.Container):
+        children = widget.get_children ()
+        for i in xrange (len (children)):
+            label_set_autowrap (children[i])
+    elif isinstance (widget, gtk.Label) and widget.get_line_wrap ():
+        widget.connect_after ("size-allocate", __label_size_allocate)
 
 ### set wrap width to the pango.Layout of the labels ###
-def __label_size_allocate(widget, allocation):
-    layout = widget.get_layout()
+def __label_size_allocate (widget, allocation):
+    layout = widget.get_layout ()
 
-    lw_old, lh_old = layout.get_size()
+    lw_old, lh_old = layout.get_size ()
 
     # fixed width labels
     if lw_old/pango.SCALE == allocation.width:
         return
 
-    layout.set_width(allocation.width * pango.SCALE)
-    lw, lh = layout.get_size()
+    layout.set_width (allocation.width * pango.SCALE)
+    lw, lh = layout.get_size ()
 
     if lh_old != lh:
-        widget.set_size_request(-1, lh/pango.SCALE)
+        widget.set_size_request (-1, lh / pango.SCALE)

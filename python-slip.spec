@@ -3,7 +3,7 @@
 %{!?python_version: %define python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.1.7
+Version:    0.1.8
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -70,6 +70,7 @@ rm -rf %buildroot
 %doc COPYING
 %dir %{python_sitelib}/slip/
 %{python_sitelib}/slip/__init__.py*
+%{python_sitelib}/slip/util
 %{python_sitelib}/slip-%{version}-py%{python_version}.egg-info
 
 %files dbus
@@ -84,6 +85,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Mon Aug 04 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.8
+- add slip.util.hookable
+
 * Thu Jul 24 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.7
 - fix import error (#456511)
 

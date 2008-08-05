@@ -80,6 +80,16 @@ class Hookable (object):
             self.__real_hooks__ = set ()
         return self.__real_hooks__
 
+    def _get_hooks_enabled (self):
+        if not hasattr (self, "__hooks_enabled__"):
+            self.__hooks_enabled__ = True
+        return self.__hooks_enabled__
+
+    def _set_hooks_enabled (self, enabled):
+        self.__hooks_enabled__ = enabled
+
+    hooks_enabled = property (_get_hooks_enabled, _set_hooks_enabled)
+
     def add_hook (self, hook, *args, **kwargs):
         assert callable (hook)
         hookentry = _HookEntry (hook, args, kwargs)
@@ -89,8 +99,9 @@ class Hookable (object):
         self.__hooks__.remove (_HookEntry (hook, args, kwargs))
     
     def _run_hooks (self):
-        for hookentry in self.__hooks__:
-            hookentry.run ()
+        if self.hooks_enabled:
+            for hookentry in self.__hooks__:
+                hookentry.run ()
 
 class HookableSet (set, Hookable):
     """A set object which calls registered hooks on changes."""

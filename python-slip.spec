@@ -3,7 +3,7 @@
 %{!?python_version: %define python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.1.8
+Version:    0.1.9
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -85,6 +85,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Tue Aug 05 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.9
+- make slip.util.hookable more flexible, easier extendable
+
 * Mon Aug 04 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.8
 - add slip.util.hookable
 

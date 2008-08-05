@@ -20,38 +20,86 @@
 """This module contains variants of certain base types which call registered
 hooks on changes."""
 
-def __wrap (func, methodname):
-    def methodwrapper (self, *p, **k):
-        retval = func (self, *p, **k)
-        getattr (set, methodname)(self, *p, **k)
-        self._run_hooks ()
-        return retval
-    return methodwrapper
+__all__ = ["Hookable", "HookableSet"]
 
-class HookableSet (set):
-    """A set object which calls registered hooks on changes."""
+class HookableType (type):
+    def __new__ (cls, name, bases, dct):
+        if dct.has_key ("_hookable_change_methods"):
+            try:
+                base = dct["_hookable_base_class"]
+            except KeyError:
+                base = None
+                for base_candidate in filter (lambda x: x != Hookable, bases):
+                    if base:
+                        raise TypeError ("too many base classes: %s" % str (bases))
+                    else:
+                        base = base_candidate
 
-    def __init__ (self, *p, **k):
-        super (HookableSet, self).__init__ (*p, **k)
-        self.__hooks__ = set ()
+            for methodname in dct["_hookable_change_methods"]:
+                dct[methodname] = HookableType.wrap_method (base, methodname)
 
-    def add_hook (self, hook):
+        return type.__new__ (cls, name, bases, dct)
+
+    @classmethod
+    def wrap_method (cls, base, methodname):
+        func = getattr (base, methodname)
+        def methodwrapper (self, *p, **k):
+            retval = func (self, *p, **k)
+            self._run_hooks ()
+            return retval
+        methodwrapper.func_name = methodname
+        return methodwrapper
+
+class _HookEntry (object):
+    def __init__ (self, hook, args, kwargs):
+        self.__hook = hook
+        self.__args = args
+        self.__kwargs = kwargs
+
+    def __cmp__ (self, obj):
+        return self.__hook == obj.__hook \
+                and self.__args == obj.__args \
+                and self.__kwargs == obj.__kwargs
+
+    def __hash__ (self):
+        return self.__hook.__hash__ () ^ \
+                self.__args.__hash__ () ^ \
+                self.__kwargs.iteritems ().__hash__ ()
+
+    def run (self):
+        self.__hook (*self.__args, **self.__kwargs)
+
+class Hookable (object):
+    """An object which calls registered hooks on changes."""
+
+    __metaclass__ = HookableType
+
+    @property
+    def __hooks__ (self, *p, **k):
+        if not hasattr (self, "__real_hooks__"):
+            self.__real_hooks__ = set ()
+        return self.__real_hooks__
+
+    def add_hook (self, hook, *args, **kwargs):
         assert callable (hook)
-        self.__hooks__.add (hook)
+        hookentry = _HookEntry (hook, args, kwargs)
+        self.__hooks__.add (hookentry)
 
-    def remove_hook (self, hook):
-        self.__hooks__.remove (hook)
+    def remove_hook (self, hook, *args, **kwargs):
+        self.__hooks__.remove (_HookEntry (hook, args, kwargs))
     
     def _run_hooks (self):
-        for hook in self.__hooks__:
-            hook ()
+        for hookentry in self.__hooks__:
+            hookentry.run ()
+
+class HookableSet (set, Hookable):
+    """A set object which calls registered hooks on changes."""
+
+    _hookable_change_methods = ("add", "clear", "difference_update", "discard",
+            "intersection_update", "pop", "remove",
+            "symmetric_difference_update", "update")
 
     def copy (self):
         obj = set.copy (self)
-        obj.__hooks__ = set ()
+        obj.__real_hooks__ = set ()
         return obj
-
-for methodname in ("add", "clear", "difference_update", "discard",
-        "intersection_update", "pop", "remove", "symmetric_difference_update",
-        "update"):
-    setattr (HookableSet, methodname, __wrap (getattr (set, methodname), methodname))

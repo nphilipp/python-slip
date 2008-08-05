@@ -90,6 +90,32 @@ class Hookable (object):
 
     hooks_enabled = property (_get_hooks_enabled, _set_hooks_enabled)
 
+    def _get_hooks_frozen (self):
+        if not hasattr (self, "__hooks_frozen__"):
+            self.__hooks_frozen__ = False
+        return self.__hooks_frozen__
+
+    def _set_hooks_frozen (self, freeze):
+        if freeze == self.hooks_frozen:
+            return
+
+        self.__hooks_frozen__ = freeze
+
+        if freeze:
+            self.__hooks_frozen_entries__ = set ()
+        else:
+            for hookentry in self.__hooks_frozen_entries__:
+                hookentry.run ()
+            del self.__hooks_frozen_entries__
+
+    hooks_frozen = property (_get_hooks_frozen, _set_hooks_frozen)
+
+    def freeze_hooks (self):
+        self.hooks_frozen = True
+
+    def thaw_hooks (self):
+        self.hooks_frozen = False
+
     def add_hook (self, hook, *args, **kwargs):
         assert callable (hook)
         hookentry = _HookEntry (hook, args, kwargs)
@@ -100,8 +126,11 @@ class Hookable (object):
     
     def _run_hooks (self):
         if self.hooks_enabled:
-            for hookentry in self.__hooks__:
-                hookentry.run ()
+            if not self.hooks_frozen:
+                for hookentry in self.__hooks__:
+                    hookentry.run ()
+            else:
+                self.__hooks_frozen_entries__.update (self.__hooks__)
 
 class HookableSet (set, Hookable):
     """A set object which calls registered hooks on changes."""

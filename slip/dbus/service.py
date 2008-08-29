@@ -118,6 +118,11 @@ class Object (dbus.service.Object):
     # PolicyKit
     default_polkit_auth_required = None
 
+    def __init__(self, conn=None, object_path=None, bus_name=None, persistent = None):
+        super (Object, self).__init__ (conn, object_path, bus_name)
+        if persistent == None:
+            self.persistent = self.__class__.persistent
+
     @classmethod
     def _timeout_cb (cls):
         if len (Object.senders) == 0:

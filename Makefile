@@ -3,7 +3,7 @@
 
 PKGNAME=python-slip
 
-SCM_REMOTEREPO_RE = ^ssh://fedorapeople.org/~nphilipp/public_html/git/$(PKGNAME).git$
+SCM_REMOTEREPO_RE = ^ssh://tiptoe@tiptoe.de/~/git/$(PKGNAME).git$
 UPLOAD_URL = ssh://fedorapeople.org/~nphilipp/public_html/$(PKGNAME)/
 
 PY_SOURCES = $(wildcard slip/*.py slip/dbus/*.py slip/gtk/*.py)

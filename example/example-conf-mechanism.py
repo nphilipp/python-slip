@@ -11,11 +11,11 @@ try:
 except ImportError:
     import sys
     import os.path
-    import example_service
+    import import_marker
 
     # try to find the slip.dbus module
 
-    modfile = example_service.__file__
+    modfile = import_marker.__file__
     path = os.path.dirname (modfile)
     found = False
     oldsyspath = sys.path

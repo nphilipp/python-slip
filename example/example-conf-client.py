@@ -2,6 +2,31 @@
 
 import dbus
 
+try:
+    import slip.dbus.service
+except ImportError:
+    import sys
+    import os.path
+    import import_marker
+
+    # try to find the slip.dbus module
+
+    modfile = import_marker.__file__
+    path = os.path.dirname (modfile)
+    found = False
+    oldsyspath = sys.path
+    while not found and path and path != "/":
+        path = os.path.abspath (os.path.join (path, os.path.pardir))
+        sys.path = oldsyspath + [path]
+        try:
+            import slip.dbus.service
+            found = True
+        except ImportError:
+            pass
+    if not found:
+        import slip.dbus.service
+    sys.path = oldsyspath
+
 system_bus = dbus.SystemBus ()
 
 from slip.dbus import polkit

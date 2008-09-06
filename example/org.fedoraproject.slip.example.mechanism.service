@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.fedoraproject.slip.example.mechanism
+Exec=/usr/local/libexec/example-conf-mechanism.py
+User=root

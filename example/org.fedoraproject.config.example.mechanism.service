@@ -1,4 +1,0 @@
-[D-BUS Service]
-Name=org.fedoraproject.config.example.mechanism
-Exec=/usr/libexec/example-conf-mechanism.py
-User=root

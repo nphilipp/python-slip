@@ -7,21 +7,21 @@
   <vendor>Example Application</vendor>
   <vendor_url>http://fedoraproject.org/example</vendor_url>
 
-   <action id="org.fedoraproject.config.example.write">
+   <action id="org.fedoraproject.slip.example.write">
     <description>Example Write Access</description>
     <message>System policy prevents write access to the Example service</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
-      <allow_active>auth_admin</allow_active>
+      <allow_active>auth_self</allow_active>
     </defaults>
   </action>
 
-  <action id="org.fedoraproject.config.example.access">
+  <action id="org.fedoraproject.slip.example.read">
     <description>Example Access</description>
     <message>System policy prevents access to the Example service</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
-      <allow_active>auth_admin</allow_active>
+      <allow_active>yes</allow_active>
     </defaults>
   </action>
 

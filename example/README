@@ -1,0 +1,18 @@
+To use this example code, you have to install some files into system locations.
+Run "make example_install" as root from this directory to do that, "make
+example_uninstall" will uninstall these files again.
+
+There are two ways to run the service right now:
+
+1. Run "./example-conf-mechanism.py" as root from this directory. This will let
+you see the output of the example mechanism and observe it exiting after the
+client exited.
+
+2. With SELinux permissive or disabled(*), the system message bus will start up the installed example service from the installed location. This will not let you see its output and you will have to look at the list of running processes to see that it exits after the client.
+
+(*): The SELinux policy only allows the system message bus daemon to start
+select binaries, this example service isn't covered.
+
+The you can run "./example-conf-client.py" as your normal user which will call
+a set of methods on the service mechanism.
+

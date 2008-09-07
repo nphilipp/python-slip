@@ -6,9 +6,12 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 
+### FIND THE ACTUAL EXAMPLE CODE...
 try:
+    # try to import the module installed in the system
     import slip.dbus.service
 except ImportError:
+    # try to find the module in the unpacked source tree
     import sys
     import os.path
     import import_marker
@@ -30,6 +33,7 @@ except ImportError:
     if not found:
         import slip.dbus.service
     sys.path = oldsyspath
+### ...BELOW HERE:
 
 class ExampleObject(slip.dbus.service.Object):
     def __init__ (self, *p, **k):

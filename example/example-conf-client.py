@@ -2,9 +2,12 @@
 
 import dbus
 
+### FIND THE ACTUAL EXAMPLE CODE...
 try:
+    # try to import the module installed in the system
     import slip.dbus.service
 except ImportError:
+    # try to find the module in the unpacked source tree
     import sys
     import os.path
     import import_marker
@@ -26,6 +29,7 @@ except ImportError:
     if not found:
         import slip.dbus.service
     sys.path = oldsyspath
+### ...BELOW HERE:
 
 system_bus = dbus.SystemBus ()
 

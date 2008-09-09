@@ -75,7 +75,7 @@ rm -rf %buildroot
 
 %files dbus
 %defattr(-,root,root,-)
-%doc slip/dbus/README slip/dbus/examples
+%doc doc/dbus/*
 %{python_sitelib}/slip/dbus
 %{python_sitelib}/slip.dbus-%{version}-py%{python_version}.egg-info
 

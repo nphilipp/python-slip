@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.1.13
+Version:    0.1.14
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -85,6 +85,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Mon Sep 15 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.14
+- clarify examples a bit
+
 * Tue Sep 09 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.13
 - add working examples
 

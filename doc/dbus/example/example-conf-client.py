@@ -2,7 +2,7 @@
 
 import dbus
 
-### FIND THE ACTUAL EXAMPLE CODE...
+### FIND THE ACTUAL EXAMPLE CODE BELOW...
 try:
     # try to import the module installed in the system
     import slip.dbus.service

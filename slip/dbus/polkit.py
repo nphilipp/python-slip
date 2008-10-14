@@ -84,6 +84,28 @@ class PolKit (object):
             PolKit.__dbusobj = self._systembus.get_object ("org.freedesktop.PolicyKit", "/")
         return PolKit.__dbusobj
 
+    def obtainable_authorizations (self):
+        # already obtained authorizations
+        f = os.popen ("/usr/bin/polkit-auth")
+        auths = map (lambda x: x.strip (), f.readlines ())
+        f.close ()
+        # not yet obtained authorizations
+        f = os.popen ("/usr/bin/polkit-auth --show-obtainable")
+        auths.extend (map (lambda x: x.strip (), f.readlines ()))
+        f.close ()
+
+        return auths
+
+    def AreAuthorizationsObtainable (self, authorizations):
+        if isinstance (authorizations, basestring):
+            authorizations = [authorizations]
+
+        all_auths = self.obtainable_authorizations ()
+
+        obtainable = reduce (lambda x, y: x and y in all_auths, authorizations, True)
+
+        return obtainable
+
     def IsSystemBusNameAuthorized (self, system_bus_name, action_id):
         revoke_if_one_shot = True
         return self._dbusobj.IsSystemBusNameAuthorized (action_id, system_bus_name, revoke_if_one_shot, dbus_interface = "org.freedesktop.PolicyKit")
@@ -93,6 +115,9 @@ class PolKit (object):
         return self._dbusobj.IsSystemBusNameAuthorized (action_id, pid, revoke_if_one_shot, dbus_interface = "org.freedesktop.PolicyKit")
 
 __polkit = PolKit ()
+
+def AreAuthorizationsObtainable (authorizations):
+    return __polkit.AreAuthorizationsObtainable (authorizations)
 
 def IsSystemBusNameAuthorized (system_bus_name, action_id):
     return __polkit.IsSystemBusNameAuthorized (system_bus_name, action_id)

@@ -9,8 +9,8 @@ Summary:    Miscellaneous convenience, extension and workaround code for Python
 
 Group:      System Environment/Libraries
 License:    GPLv2+
-URL:        http://nphilipp.fedorapeople.org/python-slip/
-Source0:    http://nphilipp.fedorapeople.org/python-slip/%{name}-%{version}.tar.bz2
+URL:        http://fedorahosted.org/python-slip
+Source0:    http://fedorahosted.org/releases/$(echo %{name} | %{__sed} 's@\(\(.\)\(.\).*\)@\2/\3/\1@')/%{name}-%{version}.tar.bz2
 BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:  noarch
 
@@ -85,6 +85,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Thu Nov 27 2008 Nils Philippsen <nphilipp@redhat.com
+- use fedorahosted.org URLs
+
 * Tue Oct 14 2008 Nils Philippsen <nphilipp@redhat.com> - 0.1.15
 - add slip.dbus.polkit.AreAuthorizationsObtainable()
 

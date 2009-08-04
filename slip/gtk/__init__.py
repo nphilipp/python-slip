@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2004, 2007 Red Hat, Inc.
+# Copyright © 2004, 2007 Red Hat, Inc.
 # Authors:
 # Thomas Woerner <twoerner@redhat.com>
 # Florian Festi <ffesti@redhat.com>

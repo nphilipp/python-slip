@@ -28,7 +28,12 @@ Summary:    Convenience functions for dbus services
 Group:      System Environment/Libraries
 Requires:   %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:   dbus-python >= 0.80
+%if 0%{?fedora}%{?rhel} && 0%{?fedora} < 12 && 0%{?rhel} < 6
 Requires:   PolicyKit >= 0.8-3
+%else
+Conflicts:  PolicyKit < 0.8-3
+Requires:   polkit >= 0.94
+%endif
 
 %description dbus
 The Simple Library for Python packages contain miscellaneous code for
@@ -85,6 +90,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Fri Aug 21 2009 Nils Philippsen <nils@redhat.com>
+- require polkit >= 0.94 from F-12 on
+
 * Thu Nov 27 2008 Nils Philippsen <nphilipp@redhat.com
 - use fedorahosted.org URLs
 

@@ -110,7 +110,6 @@ class Object (dbus.service.Object):
     default_duration = 5
     duration = default_duration
     current_source = None
-    quit_fn = None
     senders = set ()
     connections_senders = {}
     connections_smobjs = {}

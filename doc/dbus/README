@@ -1,9 +1,20 @@
-This package contains slip.dbus.service.TimeoutObject which easily allows to
-create dbus-activated services which end themselves when its clients disconnect
-from the bus.
+This package contains slip.dbus.service.Object which has these features:
 
-This is helpful if you want your service to survive along with its client(s)
-because it e.g. contains non-trivial state, does other things on startup
-which are expensive in some way or monitors other things and notifies dbus
-clients about it.
+1) It easily allows to create dbus-activated services which end themselves when
+their clients disconnect from the bus. This is helpful if you want your service
+to survive along with its client(s) because it e.g. contains non-trivial state,
+does other things on startup which are expensive in some way or monitors other
+things and notifies dbus clients about it.
+
+Usage: In the most simple case just derive your service class from
+slip.dbus.service.Object instead of dbus.service.Object, then call
+slip.dbus.service.set_mainloop () before actually running your main loop. No
+changes to your client code are necessary.
+
+2) It simplifies hooking up your services with PolicyKit.
+
+Usage: Mark your service methods with the
+@slip.dbus.polkit.require_auth(action_name) decorator. If you want to enable
+using PolicyKit with an API <= 0.9, you need to mark the corresponding proxy
+methods with the @polkit.enable_proxy decorator.
 

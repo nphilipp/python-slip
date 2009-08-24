@@ -72,7 +72,7 @@ rm -rf %buildroot
 
 %files
 %defattr(-,root,root,-)
-%doc COPYING
+%doc COPYING doc/dbus
 %dir %{python_sitelib}/slip/
 %{python_sitelib}/slip/__init__.py*
 %{python_sitelib}/slip/util

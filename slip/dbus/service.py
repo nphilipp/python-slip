@@ -2,7 +2,7 @@
 # slip.dbus.service -- convenience functions for using dbus-activated
 # services
 #
-# Copyright © 2008 Red Hat, Inc.
+# Copyright © 2008, 2009 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ def wrap_method (method):
             action_id = getattr (self, "default_polkit_auth_required", None)
         if action_id:
             authorized = polkit.IsSystemBusNameAuthorized (k[sender_keyword], action_id)
-            if authorized != "yes":
+            if not authorized:
                 raise polkit.NotAuthorizedException (action_id)
 
         if hide_sender_keyword:

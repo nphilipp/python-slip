@@ -3,32 +3,35 @@
 import dbus
 
 ### FIND THE ACTUAL EXAMPLE CODE BELOW...
-try:
-    # try to import the module installed in the system
-    import slip.dbus.service
-except ImportError:
-    # try to find the module in the unpacked source tree
-    import sys
-    import os.path
-    import import_marker
 
-    # try to find the slip.dbus module
+# try to find the module in the unpacked source tree
+import sys
+import os.path
+import import_marker
 
-    modfile = import_marker.__file__
-    path = os.path.dirname (modfile)
-    found = False
-    oldsyspath = sys.path
-    while not found and path and path != "/":
-        path = os.path.abspath (os.path.join (path, os.path.pardir))
-        sys.path = oldsyspath + [path]
-        try:
-            import slip.dbus.service
+# try to find the slip.dbus module
+import imp
+
+modfile = import_marker.__file__
+path = os.path.dirname (modfile)
+found = False
+oldsyspath = sys.path
+while not found and path and path != "/":
+    path = os.path.abspath (os.path.join (path, os.path.pardir))
+    try:
+        slipmod = imp.find_module ("slip", [path] + sys.path)
+	if slipmod[1].startswith (path + "/"):
             found = True
-        except ImportError:
-            pass
-    if not found:
-        import slip.dbus.service
+            sys.path.insert (0, path)
+            import slip.dbus.service
+    except ImportError:
+        pass
+
+if not found:
+    # fall back to system paths
     sys.path = oldsyspath
+    import slip.dbus.service
+
 ### ...BELOW HERE:
 
 system_bus = dbus.SystemBus ()

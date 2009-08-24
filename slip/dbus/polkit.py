@@ -2,7 +2,7 @@
 # slip.dbus.polkit -- convenience decorators and functions for using PolicyKit
 # with dbus services and clients
 #
-# Copyright © 2008 Red Hat, Inc.
+# Copyright © 2008, 2009 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,8 +25,9 @@ PolicyKit with dbus services and clients."""
 
 import os
 import dbus
+import dbus.mainloop.glib
 
-__all__ = ["require_auth", "enable_proxy", "NotAuthorizedException", "IsSystemBusNameAuthorized", "IsProcessAuthorized"]
+__all__ = ["require_auth", "enable_proxy", "NotAuthorizedException", "IsSystemBusNameAuthorized"]
 
 def require_auth (polkit_auth):
     def require_auth_decorator (method):
@@ -39,31 +40,29 @@ def require_auth (polkit_auth):
 EXC_NAME = "org.fedoraproject.slip.dbus.service.PolKit.NotAuthorizedException"
 
 def enable_proxy (func):
-    def enable_proxy_wrapper (*p, **k):
-        sessionbus = None
-        authobj = None
-        retval = None
+    if PolKit.polkit_version () == "0":
+        def enable_proxy_wrapper (*p, **k):
+            auth_interface = PolKit._polkit_auth_interface ()
+            retval = None
 
-        try:
-            return func (*p, **k)
-        except dbus.DBusException, e:
-            exc_name = e.get_dbus_name ()
-            if exc_name.startswith (EXC_NAME + "."):
-                if not sessionbus:
-                    sessionbus = dbus.SessionBus ()
-                    authobj = sessionbus.get_object ("org.freedesktop.PolicyKit.AuthenticationAgent", "/")
+            try:
+                return func (*p, **k)
+            except dbus.DBusException, e:
+                exc_name = e.get_dbus_name ()
 
                 action_id = exc_name[len (EXC_NAME)+1:]
-                obtained = authobj.ObtainAuthorization (action_id, dbus.UInt32 (0),
-                        dbus.UInt32 (os.getpid ()),
-                        dbus_interface = "org.freedesktop.PolicyKit.AuthenticationAgent")
+                obtained = auth_interface.ObtainAuthorization (action_id,
+                        dbus.UInt32 (0),
+                        dbus.UInt32 (os.getpid ()))
                 if not obtained:
                     raise
             else:
                 raise
 
-        return func (*p, **k)
-    return enable_proxy_wrapper
+            return func (*p, **k)
+        return enable_proxy_wrapper
+    else:
+        return func
 
 class NotAuthorizedException (dbus.DBusException):
     _dbus_error_name = "org.fedoraproject.slip.dbus.service.PolKit.NotAuthorizedException"
@@ -72,19 +71,79 @@ class NotAuthorizedException (dbus.DBusException):
         super (NotAuthorizedException, self).__init__ (*p, **k)
 
 class PolKit (object):
+    polkit_valid_versions = [ "1", "0" ]
+    __polkit_version = None
+    __polkit_auth_interface = None
+    __polkitd_interface = None
+    __systembus = None
+    __sessionbus = None
+    __systembus_name = None
+
+    @classmethod
+    def __determine_polkit_version (cls):
+        if not PolKit.__systembus:
+            dbus.mainloop.glib.DBusGMainLoop (set_as_default = True)
+            PolKit.__systembus = dbus.SystemBus ()
+
+        if not PolKit.__polkit_version:
+            pk_ver_objnamepathif = {
+                    "0": ("org.freedesktop.PolicyKit", "/", "org.freedesktop.PolicyKit"),
+                    "1": ("org.freedesktop.PolicyKit1", "/org/freedesktop/PolicyKit1/Authority", "org.freedesktop.PolicyKit1.Authority")
+                    }
+
+            pk_ver_if = {}
+
+            for pkver, pkobjnamepathif in pk_ver_objnamepathif.iteritems ():
+                name, path, interface = pkobjnamepathif
+                try:
+                    pk_ver_if[pkver] = dbus.Interface (PolKit.__systembus.get_object (name, path), interface)
+                except dbus.DBusException:
+                    pass
+
+            if "1" in PolKit.polkit_valid_versions and \
+                    "1" in pk_ver_if:
+                PolKit.__polkit_version = "1"
+                PolKit.__polkit_auth_interface = None
+                PolKit.__polkitd_interface = pk_ver_if["1"]
+            elif "0" in PolKit.polkit_valid_versions and \
+                    "0" in pk_ver_if:
+                PolKit.__polkit_version = "0"
+                if not PolKit.__sessionbus:
+                    dbus.mainloop.glib.DBusGMainLoop (set_as_default = True)
+                    PolKit.__sessionbus = dbus.SessionBus ()
+                authobj = PolKit.__sessionbus.get_object ("org.freedesktop.PolicyKit.AuthenticationAgent", "/")
+                PolKit.__polkit_auth_interface = dbus.Interface (authobj, "org.freedesktop.PolicyKit.AuthenticationAgent")
+                PolKit.__polkitd_interface = pk_ver_if["0"]
+
+    @classmethod
+    def polkit_version (cls):
+        if not PolKit.__polkit_version:
+            PolKit.__determine_polkit_version ()
+        return PolKit.__polkit_version
+
+    @classmethod
+    def _polkit_auth_interface (cls):
+        if not PolKit.__polkit_version:
+            PolKit.__determine_polkit_version ()
+        return PolKit.__polkit_auth_interface
+
+    @classmethod
+    def _polkitd_interface (cls):
+        if not PolKit.__polkit_version:
+            PolKit.__determine_polkit_version ()
+        return PolKit.__polkitd_interface
+
     @property
     def _systembus (self):
         if not hasattr (PolKit, "__systembus"):
+            dbus.mainloop.glib.DBusGMainLoop (set_as_default = True)
             PolKit.__systembus = dbus.SystemBus ()
         return PolKit.__systembus
 
-    @property
-    def _dbusobj (self):
-        if not hasattr (PolKit, "__dbusobj"):
-            PolKit.__dbusobj = self._systembus.get_object ("org.freedesktop.PolicyKit", "/")
-        return PolKit.__dbusobj
+    def __list_obtainable_authorizations_0 (self):
+        if self.polkit_version () != "0":
+            return None
 
-    def obtainable_authorizations (self):
         # already obtained authorizations
         f = os.popen ("/usr/bin/polkit-auth")
         auths = map (lambda x: x.strip (), f.readlines ())
@@ -96,31 +155,71 @@ class PolKit (object):
 
         return auths
 
+    def __authorization_is_obtainable_1 (self, authorization):
+        pki = self._polkitd_interface ()
+        if not pki:
+            return False
+
+        if not self.__systembus_name:
+            self.__systembus_name = self.__systembus.get_unique_name ()
+
+        is_authorized, is_challenge, details = \
+                pki.CheckAuthorization (
+                        ("system-bus-name", {"name": self.__systembus_name}),
+                        authorization,
+                        {},
+                        0,
+                        "")
+
+        return is_authorized or is_challenge
+
     def AreAuthorizationsObtainable (self, authorizations):
+        if not self._polkitd_interface ():
+            return False
+
         if isinstance (authorizations, basestring):
             authorizations = [authorizations]
 
-        all_auths = self.obtainable_authorizations ()
+        if self.polkit_version () == "1":
+            obtainable = reduce (lambda x, y: x and self.__authorization_is_obtainable_1 (y), authorizations, True)
 
-        obtainable = reduce (lambda x, y: x and y in all_auths, authorizations, True)
+            return obtainable
+        elif self.polkit_version () == "0":
+            all_auths = self.__list_obtainable_authorizations_0 ()
 
-        return obtainable
+            obtainable = reduce (lambda x, y: x and y in all_auths, authorizations, True)
 
-    def IsSystemBusNameAuthorized (self, system_bus_name, action_id):
+            return obtainable
+        else:
+            return False
+
+    def IsSystemBusNameAuthorized (self, system_bus_name, action_id, details = {}):
+        pkv = self.polkit_version ()
+        if pkv == "1":
+            return self.IsSystemBusNameAuthorized_1 (system_bus_name, action_id, details)
+        elif pkv == "0":
+            return self.IsSystemBusNameAuthorized_0 (system_bus_name, action_id)
+        else:
+            return False
+
+    def IsSystemBusNameAuthorized_0 (self, system_bus_name, action_id):
         revoke_if_one_shot = True
-        return self._dbusobj.IsSystemBusNameAuthorized (action_id, system_bus_name, revoke_if_one_shot, dbus_interface = "org.freedesktop.PolicyKit")
+        return self._polkitd_interface ().IsSystemBusNameAuthorized (action_id, system_bus_name, revoke_if_one_shot) == "yes"
 
-    def IsProcessAuthorized (self, pid, action_id):
-        revoke_if_one_shot = True
-        return self._dbusobj.IsSystemBusNameAuthorized (action_id, pid, revoke_if_one_shot, dbus_interface = "org.freedesktop.PolicyKit")
+    def IsSystemBusNameAuthorized_1 (self, system_bus_name, action_id, details = {}):
+        is_authorized, is_challenge, details = \
+                self._polkitd_interface ().CheckAuthorization (
+                        ("system-bus-name", {"name": system_bus_name}),
+                        action_id,
+                        details,
+                        0x1, # -> challenge if obtainable
+                        "")
+        return is_authorized
 
 __polkit = PolKit ()
 
 def AreAuthorizationsObtainable (authorizations):
     return __polkit.AreAuthorizationsObtainable (authorizations)
 
-def IsSystemBusNameAuthorized (system_bus_name, action_id):
-    return __polkit.IsSystemBusNameAuthorized (system_bus_name, action_id)
-
-def IsProcessAuthorized (pid, action_id):
-    return __polkit.IsProcessAuthorized (pid, action_id)
+def IsSystemBusNameAuthorized (system_bus_name, action_id, details = {}):
+    return __polkit.IsSystemBusNameAuthorized (system_bus_name, action_id, details)

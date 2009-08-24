@@ -2,5 +2,5 @@ slip.gtk.label_set_autowrap:
     Thomas Woerner <twoerner@redhat.com>
     Florian Festi <ffesti@redhat.com>
 
-slip.dbus.*:
-    Nils Philippsen <nphilipp@redhat.com>
+slip.dbus.*, slip.util.*:
+    Nils Philippsen <nils@redhat.com>

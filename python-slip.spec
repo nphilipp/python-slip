@@ -10,7 +10,7 @@ Summary:    Miscellaneous convenience, extension and workaround code for Python
 Group:      System Environment/Libraries
 License:    GPLv2+
 URL:        http://fedorahosted.org/python-slip
-Source0:    http://fedorahosted.org/releases/$(echo %{name} | %{__sed} 's@\(\(.\)\(.\).*\)@\2/\3/\1@')/%{name}-%{version}.tar.bz2
+Source0:    http://fedorahosted.org/released/%{name}/%{name}-%{version}.tar.bz2
 BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:  noarch
 

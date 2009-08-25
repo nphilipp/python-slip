@@ -25,5 +25,8 @@ setup (
 setup (
         name = "slip.gtk",
         version = "@VERSION@",
-        py_modules = ["slip.gtk.__init__"]
+        py_modules = [
+            "slip.gtk.__init__",
+            "slip.gtk.tools"
+            ]
         )

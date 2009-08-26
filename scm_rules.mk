@@ -24,7 +24,7 @@ else
 endif
 
 ifndef SCM_CHANGED_FILES_SINCE_TAG_COMMAND
-	SCM_CHANGED_FILES_SINCE_TAG_COMMAND = $(SCM_DIFF_TAG_COMMAND) | egrep '^---|^\+\+\+' | sed 's:^...[   ][      ]*[ab]/::g' | sort -u
+	SCM_CHANGED_FILES_SINCE_TAG_COMMAND = $(SCM_DIFF_TAG_COMMAND) | grep -v "^[-+][-+][-+][ \t][ \t]*/dev/null$$" | egrep '^---[^-]|^\+\+\+' | sed 's:^...[ \t][ \t]*[ab]/::g' | sort -u
 endif
 
 checkmods:

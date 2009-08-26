@@ -26,6 +26,7 @@ SCM_DIFF_LAST_TAG_COMMAND = git diff $(SCM_LAST_TAG)
 SCM_PUSH_REMOTE_COMMAND = { git push --all $(SCM_REMOTEREPO) && git push --tags $(SCM_REMOTEREPO); }
 SCM_SNAP_ARCHIVE_COMMAND = git archive --format=tar --prefix=$(PKGNAME)-$(PKGVERSION)/ HEAD | bzip2 -9 > $(PKGNAME)-$(PKGVERSION).tar.bz2
 SCM_ARCHIVE_COMMAND = git archive --format=tar --prefix=$(PKGNAME)-$(PKGVERSION)/ $(SCM_TAG) | bzip2 -9 > $(PKGNAME)-$(PKGVERSION).tar.bz2
-SCM_LASTLOG_COMMAND = git log $(SCM_TAG)..
+SCM_LASTLOG_COMMAND = git log --stat $(SCM_TAG)..
+SCM_CHANGED_FILES_SINCE_TAG_COMMAND = git diff --stat $(SCM_TAG)
 
 include scm_rules.mk

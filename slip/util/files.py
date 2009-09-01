@@ -55,7 +55,13 @@ def copyfile (srcpath, dstpath, mode_from_dst = True, restorecon = True):
 
     while data != "":
         data = srcfile.read (BLOCKSIZE)
-        dsttmpfile.write (data)
+        try:
+            dsttmpfile.write (data)
+        except IOError, ioe:
+            srcfile.close ()
+            dsttmpfile.close ()
+            os.unlink (dsttmpfile.name)
+            raise ioe
 
     srcfile.close ()
     dsttmpfile.close ()

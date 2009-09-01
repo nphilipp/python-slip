@@ -9,6 +9,7 @@ setup (
             "slip.__init__",
             "slip.util.__init__",
             "slip.util.hookable"
+            "slip.util.files"
             ]
         )
 

@@ -3,6 +3,7 @@
 # services
 #
 # Copyright © 2008, 2009 Red Hat, Inc.
+# Authors: Nils Philippsen <nils@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,8 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-# Authors: Nils Philippsen <nphilipp@redhat.com>
 
 """This module contains convenience functions for using dbus-activated services."""
 

@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.2.2
+Version:    0.2.3
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -92,6 +92,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Tue Sep 01 2009 Nils Philippsen <nils@redhat.com> - 0.2.3-1
+- add issamefile(), linkfile(), linkorcopyfile() to slip.util.files
+
 * Tue Sep 01 2009 Nils Philippsen <nils@redhat.com> - 0.2.2-1
 - add slip.util.files
 

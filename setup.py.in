@@ -8,7 +8,7 @@ setup (
         py_modules = [
             "slip.__init__",
             "slip.util.__init__",
-            "slip.util.hookable"
+            "slip.util.hookable",
             "slip.util.files"
             ]
         )

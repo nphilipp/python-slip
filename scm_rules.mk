@@ -36,8 +36,8 @@ checkmods:
 checkrepo:
 ifndef BYPASSUPSTREAM
 	@x=0; \
-	if [ -z "$$(echo $(SCM_REMOTEREPO) | egrep -x '$(SCM_REMOTEREPO_RE)')" ]; then \
-		echo The repository $(SCM_REMOTEREPO) is not the upstream of $(PKGNAME). >&2; \
+	if [ -z "$$(echo $(SCM_REMOTEREPO_URL) | egrep -x '$(SCM_REMOTEREPO_RE)')" ]; then \
+		echo The repository $(SCM_REMOTEREPO_URL) is not the upstream of $(PKGNAME). >&2; \
 		x=1; \
 	fi; if [ "$(SCM_REMOTE_BRANCH)" != "$(SCM_ACTUAL_REMOTE_BRANCH)" ]; then \
 		echo The remote branch must be $(SCM_REMOTE_BRANCH), not $(SCM_ACTUAL_REMOTE_BRANCH) >&2; \
@@ -81,7 +81,7 @@ else
 archivepush: checkrepo
 endif
 ifndef BYPASSUPSTREAM
-	@echo Pushing to repository $(SCM_REMOTEREPO).
+	@echo Pushing to repository $(SCM_REMOTEREPO_URL).
 	@if ! $(SCM_PUSH_REMOTE_COMMAND); then \
 		echo Pushing failed. >&2; \
 		echo Use BYPASSUPSTREAM=1 to bypass pushing. >&2; \

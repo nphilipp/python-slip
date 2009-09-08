@@ -71,7 +71,7 @@ if __name__ == '__main__':
     bus = dbus.SystemBus ()
 
     name = dbus.service.BusName ("org.fedoraproject.slip.example.mechanism", bus)
-    object = ExampleObject (bus, '/org/fedoraproject/slip/example/object')
+    object = ExampleObject (name, '/org/fedoraproject/slip/example/object')
 
     mainloop = gobject.MainLoop ()
     slip.dbus.service.set_mainloop (mainloop)

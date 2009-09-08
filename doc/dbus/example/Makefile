@@ -26,6 +26,8 @@ example_install:
 	install -m0644 $(service_DATA) $(servicedir)
 	install -d $(confdir)
 	install -m0644 $(conf_DATA) $(confdir)
+	# old dbus daemon versions are stupid
+	touch $(confdir)/$(conf_DATA)
 	install -d $(policy0dir)
 	install -m0644 $(policy0_DATA) $(policy0dir)
 	install -d $(policy1dir)

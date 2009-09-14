@@ -34,8 +34,6 @@ if not found:
 
 ### ...BELOW HERE:
 
-system_bus = dbus.SystemBus ()
-
 from slip.dbus import polkit
 
 class DBusProxy (object):

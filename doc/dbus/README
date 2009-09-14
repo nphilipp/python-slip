@@ -18,3 +18,4 @@ Usage: Mark your service methods with the
 using PolicyKit with an API <= 0.9, you need to mark the corresponding proxy
 methods with the @polkit.enable_proxy decorator.
 
+NB: Remember that PolicyKit action names have to be lower-case.

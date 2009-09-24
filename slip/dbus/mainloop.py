@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 # slip.dbus.mainloop -- mainloop wrappers
 #
 # Copyright © 2009 Red Hat, Inc.
@@ -24,7 +25,9 @@
 
 _mainloop_class = None
 
+
 class MainLoop(object):
+
     def __new__(cls, *args, **kwargs):
         global _mainloop_class
         if _mainloop_class is None:
@@ -43,7 +46,9 @@ class MainLoop(object):
     def quit(self):
         raise NotImplementedError()
 
+
 class GlibMainLoop(MainLoop):
+
     def __init__(self):
         import gobject
         ml = gobject.MainLoop()
@@ -55,18 +60,19 @@ class GlibMainLoop(MainLoop):
         self.run = ml.run
         self.quit = ml.quit
 
+
 def set_type(mltype):
     global _mainloop_class
 
     if _mainloop_class is not None:
         raise RuntimeError("The main loop type can only be set once.")
 
-    ml_type_class = {
-            "glib": GlibMainLoop
-            }
+    ml_type_class = {"glib": GlibMainLoop}
 
     if mltype in ml_type_class:
         _mainloop_class = ml_type_class[mltype]
     else:
-        raise ValueError("'%s' is not one of the valid main loop types (%s)." % (mltype, ",".join(ml_type_class.keys())))
+        raise ValueError("'%s' is not one of the valid main loop types (%s)." %
+                          (mltype, ",".join(ml_type_class.keys())))
+
 

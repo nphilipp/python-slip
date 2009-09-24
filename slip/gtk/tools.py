@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 #
 # Copyright © 2004, 2007 Red Hat, Inc.
 # Authors:
@@ -21,33 +22,42 @@
 """This module contains the label_set_autowrap() function which makes labels
 re-wrap themselves automatically if their containers change in size."""
 
-import gtk, pango
+import gtk
+import pango
 
 __all__ = ["label_set_autowrap"]
 
-def label_set_autowrap (widget):
+
+def label_set_autowrap(widget):
     """Make labels automatically re-wrap if their containers are resized.
     Accepts label or container widgets."""
-    if isinstance (widget, gtk.Container):
-        children = widget.get_children ()
-        for i in xrange (len (children)):
-            label_set_autowrap (children[i])
-    elif isinstance (widget, gtk.Label) and widget.get_line_wrap ():
-        widget.connect_after ("size-allocate", __label_size_allocate)
 
-def __label_size_allocate (widget, allocation):
+    if isinstance(widget, gtk.Container):
+        children = widget.get_children()
+        for i in xrange(len(children)):
+            label_set_autowrap(children[i])
+    elif isinstance(widget, gtk.Label) and widget.get_line_wrap():
+        widget.connect_after("size-allocate", __label_size_allocate)
+
+
+def __label_size_allocate(widget, allocation):
     """Callback which re-allocates the size of a label."""
-    layout = widget.get_layout ()
 
-    lw_old, lh_old = layout.get_size ()
+    layout = widget.get_layout()
+
+    (lw_old, lh_old) = layout.get_size()
 
     # fixed width labels
-    if lw_old/pango.SCALE == allocation.width:
+
+    if lw_old / pango.SCALE == allocation.width:
         return
 
     # set wrap width to the pango.Layout of the labels ###
-    layout.set_width (allocation.width * pango.SCALE)
-    lw, lh = layout.get_size ()
+
+    layout.set_width(allocation.width * pango.SCALE)
+    (lw, lh) = layout.get_size()
 
     if lh_old != lh:
-        widget.set_size_request (-1, lh / pango.SCALE)
+        widget.set_size_request(-1, lh / pango.SCALE)
+
+

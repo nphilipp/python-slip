@@ -25,6 +25,7 @@ PolicyKit with dbus services and clients."""
 import os
 import dbus
 import dbus.mainloop.glib
+import mainloop
 
 __all__ = ["require_auth", "enable_proxy", "NotAuthorizedException", "IsSystemBusNameAuthorized"]
 
@@ -68,6 +69,9 @@ class NotAuthorizedException (dbus.DBusException):
     def __init__ (self, action_id, *p, **k):
         self._dbus_error_name = self.__class__._dbus_error_name + "." + action_id
         super (NotAuthorizedException, self).__init__ (*p, **k)
+
+class VersionError(Exception):
+    pass
 
 class PolKit (object):
     polkit_valid_versions = [ "1", "0" ]
@@ -113,6 +117,8 @@ class PolKit (object):
                 authobj = PolKit.__sessionbus.get_object ("org.freedesktop.PolicyKit.AuthenticationAgent", "/")
                 PolKit.__polkit_auth_interface = dbus.Interface (authobj, "org.freedesktop.PolicyKit.AuthenticationAgent")
                 PolKit.__polkitd_interface = pk_ver_if["0"]
+            else:
+                raise VersionError ("Cannot determine valid PolicyKit version.")
 
     @classmethod
     def polkit_version (cls):
@@ -172,6 +178,18 @@ class PolKit (object):
 
         return is_authorized or is_challenge
 
+    @classmethod
+    def _no_or_long_timeout (cls):
+        if not hasattr (cls, "__no_or_long_timeout"):
+            if dbus.version < (0, 84, 0):
+                import gobject
+                # dbus-python uses seconds and the C library milliseconds
+                cls.__no_or_long_timeout = gobject.G_MAXINT / 1000.0
+            else:
+                # timeout == None shall mean no timeout
+                cls.__no_or_long_timeout = None
+            return cls.__no_or_long_timeout
+
     def AreAuthorizationsObtainable (self, authorizations):
         if not self._polkitd_interface ():
             return False
@@ -192,33 +210,76 @@ class PolKit (object):
         else:
             return False
 
-    def IsSystemBusNameAuthorized (self, system_bus_name, action_id, details = {}):
+    def IsSystemBusNameAuthorized (self, system_bus_name, action_id, challenge = True, details = {}):
+        """Don't call this inside a D-Bus method or signal handler."""
+        ml = mainloop.MainLoop ()
+
+        reply = {}
+
+        def reply_cb (is_auth):
+            reply["reply"] = is_auth
+            ml.quit ()
+
+        def error_cb (error):
+            reply["error"] = error
+            ml.quit ()
+
+        self.IsSystemBusNameAuthorizedAsync (system_bus_name, action_id,
+                reply_handler = reply_cb, error_handler = error_cb,
+                challenge = challenge, details = details)
+
+        ml.run ()
+
+        if "error" in reply:
+            raise reply["error"]
+
+        return reply["reply"]
+
+    def IsSystemBusNameAuthorizedAsync (self, system_bus_name, action_id, reply_handler, error_handler, challenge = True, details = {}):
         pkv = self.polkit_version ()
         if pkv == "1":
-            return self.IsSystemBusNameAuthorized_1 (system_bus_name, action_id, details)
+            self.IsSystemBusNameAuthorizedAsync_1 (system_bus_name, action_id, reply_handler=reply_handler, error_handler=error_handler, details = details)
         elif pkv == "0":
-            return self.IsSystemBusNameAuthorized_0 (system_bus_name, action_id)
-        else:
-            return False
+            self.IsSystemBusNameAuthorizedAsync_0 (system_bus_name, action_id, reply_handler=reply_handler, error_handler=error_handler)
 
-    def IsSystemBusNameAuthorized_0 (self, system_bus_name, action_id):
+    def IsSystemBusNameAuthorizedAsync_0 (self, system_bus_name, action_id, reply_handler, error_handler):
         revoke_if_one_shot = True
-        return self._polkitd_interface ().IsSystemBusNameAuthorized (action_id, system_bus_name, revoke_if_one_shot) == "yes"
 
-    def IsSystemBusNameAuthorized_1 (self, system_bus_name, action_id, details = {}):
-        is_authorized, is_challenge, details = \
-                self._polkitd_interface ().CheckAuthorization (
-                        ("system-bus-name", {"name": system_bus_name}),
-                        action_id,
-                        details,
-                        0x1, # -> challenge if obtainable
-                        "")
-        return is_authorized
+        def reply_cb (args):
+            reply_handler (x=="yes")
+
+        self._polkitd_interface ().IsSystemBusNameAuthorized (action_id,
+                system_bus_name, revoke_if_one_shot,
+                reply_handler = reply_cb, error_handler = error_handler,
+                timeout = self._no_or_long_timeout ())
+
+    def IsSystemBusNameAuthorizedAsync_1 (self, system_bus_name, action_id, reply_handler, error_handler, challenge = True, details = {}):
+        flags = 0
+        if challenge:
+            flags |= 0x1
+
+        def reply_cb (args):
+            is_authorized, is_challenge, details = args
+            reply_handler (is_authorized)
+
+        self._polkitd_interface ().CheckAuthorization (
+                ("system-bus-name", {"name": system_bus_name}),
+                action_id, details, flags, "",
+                reply_handler = reply_cb, error_handler = error_handler,
+                timeout = self._no_or_long_timeout ())
 
 __polkit = PolKit ()
 
 def AreAuthorizationsObtainable (authorizations):
     return __polkit.AreAuthorizationsObtainable (authorizations)
 
-def IsSystemBusNameAuthorized (system_bus_name, action_id, details = {}):
-    return __polkit.IsSystemBusNameAuthorized (system_bus_name, action_id, details)
+def IsSystemBusNameAuthorized (system_bus_name, action_id, challenge = True,
+        details = {}):
+    return __polkit.IsSystemBusNameAuthorized (system_bus_name, action_id,
+            challenge, details)
+
+def IsSystemBusNameAuthorizedAsync (system_bus_name, action_id, reply_handler,
+        error_handler, challenge = True, details = {}):
+    return __polkit.IsSystemBusNameAuthorizedAsync (system_bus_name, action_id,
+            reply_handler, error_handler, challenge, details)
+

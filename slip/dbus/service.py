@@ -52,40 +52,90 @@ def quit_cb ():
     __quit_cb__ ()
 
 SENDER_KEYWORD = "__slip_dbus_service_sender__"
+ASYNC_CALLBACKS = ("__slip_dbus_service_reply_cb__",
+        "__slip_dbus_service_error_cb__")
 
 def wrap_method (method):
     global SENDER_KEYWORD
+    global ASYNC_CALLBACKS
 
-    if method._dbus_sender_keyword != None:
+    if method._dbus_sender_keyword is not None:
         sender_keyword = method._dbus_sender_keyword
         hide_sender_keyword = False
     else:
         sender_keyword = SENDER_KEYWORD
         hide_sender_keyword = True
 
-    def wrapped_method (self, *p, **k):
-        self.sender_seen (k[sender_keyword])
+    if method._dbus_async_callbacks is not None:
+        async_callbacks = method._dbus_async_callbacks
+        method_is_async = True
+    else:
+        async_callbacks = ASYNC_CALLBACKS
+        method_is_async = False
+    hide_async_callbacks = not method_is_async
 
-        action_id = getattr (method, "_slip_polkit_auth_required", None)
-        if not action_id:
-            action_id = getattr (self, "default_polkit_auth_required", None)
-        if action_id:
-            authorized = polkit.IsSystemBusNameAuthorized (k[sender_keyword], action_id)
-            if not authorized:
-                raise polkit.NotAuthorizedException (action_id)
+    def wrapped_method (self, *p, **k):
+        sender = k[sender_keyword]
+        reply_cb = k[async_callbacks[0]]
+        error_cb = k[async_callbacks[1]]
 
         if hide_sender_keyword:
             del k[sender_keyword]
 
-        retval = method (self, *p, **k)
+        if hide_async_callbacks:
+            del k[async_callbacks[0]]
+            del k[async_callbacks[1]]
 
-        self.timeout_restart ()
+        self.sender_seen (sender)
 
-        return retval
+        action_id = getattr (method, "_slip_polkit_auth_required",
+                getattr (self, "default_polkit_auth_required", None))
+
+        if action_id:
+            def reply_handler (is_auth):
+                if is_auth:
+                    if method_is_async:
+                        # k contains async callbacks, simply pass on reply_cb
+                        # and error_cb
+                        method (self, *p, **k)
+                    else:
+                        # execute the synchronous method ...
+                        error = None
+                        try:
+                            result = method (self, *p, **k)
+                        except Exception, e:
+                            error = e
+
+                        # ... and call the reply or error callback
+                        if error:
+                            error_cb (error)
+                        else:
+                            # reply_cb((None,)) != reply_cb()
+                            if result is None:
+                                reply_cb ()
+                            else:
+                                reply_cb (result)
+                else:
+                    error_cb (polkit.NotAuthorizedException (action_id))
+                self.timeout_restart ()
+
+            def error_handler (error):
+                error_cb (error)
+                self.timeout_restart ()
+
+            polkit.IsSystemBusNameAuthorizedAsync (sender, action_id,
+                    reply_handler=reply_handler, error_handler=error_handler)
+        else:
+            # no action id, no need to do anything fancy
+            retval = method (self, *p, **k)
+            self.timeout_restart ()
+            return retval
 
     for attr in filter (lambda x: x[:6] == "_dbus_", dir (method)):
         if attr == "_dbus_sender_keyword":
             wrapped_method._dbus_sender_keyword = sender_keyword
+        elif attr == "_dbus_async_callbacks":
+            wrapped_method._dbus_async_callbacks = async_callbacks
         else:
             setattr (wrapped_method, attr, getattr (method, attr))
         #delattr (method, attr)
@@ -116,7 +166,7 @@ class Object (dbus.service.Object):
     # PolicyKit
     default_polkit_auth_required = None
 
-    def __init__(self, conn=None, object_path=None, bus_name=None, persistent = None):
+    def __init__ (self, conn=None, object_path=None, bus_name=None, persistent = None):
         super (Object, self).__init__ (conn, object_path, bus_name)
         if persistent == None:
             self.persistent = self.__class__.persistent

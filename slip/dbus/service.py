@@ -204,7 +204,7 @@ class Object(dbus.service.Object):
 
     @classmethod
     def _timeout_cb(cls):
-        if len(Object.senders) == 0:
+        if not self.persistent and len(Object.senders) == 0:
             quit_cb()
             return False
 
@@ -234,7 +234,7 @@ class Object(dbus.service.Object):
             duration = self.__class__.default_duration
         if not Object.duration or duration > Object.duration:
             Object.duration = duration
-        if not Object.persistent or len(Object.senders) == 0:
+        if not self.persistent or len(Object.senders) == 0:
             if Object.current_source:
                 gobject.source_remove(Object.current_source)
             Object.current_source = \

@@ -208,7 +208,7 @@ class Object(dbus.service.Object):
             return False
 
         Object.current_source = None
-        Object.duration = cls.default_duration
+        Object.duration = self.default_duration
 
         return False
 

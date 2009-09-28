@@ -225,7 +225,8 @@ class Object(dbus.service.Object):
                 del Object.connections_senders[conn]
                 del Object.connections_smobjs[conn]
 
-            if len(Object.senders) == 0 and Object.current_source == None:
+            if not self.persistent and len(Object.senders) == 0 and \
+                    Object.current_source == None:
                 quit_cb()
 
     def timeout_restart(self, duration=None):
@@ -238,7 +239,7 @@ class Object(dbus.service.Object):
                 gobject.source_remove(Object.current_source)
             Object.current_source = \
                 gobject.timeout_add(Object.duration * 1000,
-                                    self.__class__._timeout_cb)
+                                    self._timeout_cb)
 
     def sender_seen(self, sender):
         if (sender, self.connection) not in Object.senders:

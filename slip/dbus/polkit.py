@@ -286,7 +286,7 @@ class PolKit(object):
         revoke_if_one_shot = True
 
         def reply_cb(args):
-            reply_handler(x == "yes")
+            reply_handler(args == "yes")
 
         self._polkitd_interface().IsSystemBusNameAuthorized(action_id,
             system_bus_name, revoke_if_one_shot,

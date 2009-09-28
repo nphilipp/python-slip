@@ -40,6 +40,10 @@ class MainLoop(object):
     def iterate(self):
         raise NotImplementedError()
 
+    def iterate_over_pending_events(self):
+        while self.pending():
+            self.iterate()
+
     def run(self):
         raise NotImplementedError()
 

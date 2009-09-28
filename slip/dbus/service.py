@@ -202,8 +202,7 @@ class Object(dbus.service.Object):
         if persistent == None:
             self.persistent = self.__class__.persistent
 
-    @classmethod
-    def _timeout_cb(cls):
+    def _timeout_cb(self):
         if not self.persistent and len(Object.senders) == 0:
             quit_cb()
             return False

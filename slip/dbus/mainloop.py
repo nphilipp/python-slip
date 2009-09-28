@@ -29,6 +29,12 @@ _mainloop_class = None
 
 
 class MainLoop(object):
+    """An abstract main loop wrapper class and factory.
+
+    Use MainLoop() to get a main loop wrapper object for a main loop type
+    previously registered with set_type(). Defaults to glib main loops.
+
+    Actual main loop wrapper classes are derived from this class."""
 
     def __new__(cls, *args, **kwargs):
         global _mainloop_class
@@ -37,19 +43,29 @@ class MainLoop(object):
         return super(MainLoop, cls).__new__(_mainloop_class, *args, **kwargs)
 
     def pending(self):
+        """Returns if there are pending events."""
+
         raise NotImplementedError()
 
     def iterate(self):
+        """Iterates over one pending event."""
+
         raise NotImplementedError()
 
     def iterate_over_pending_events(self):
+        """Iterates over all pending events."""
+
         while self.pending():
             self.iterate()
 
     def run(self):
+        """Runs the main loop."""
+
         raise NotImplementedError()
 
     def quit(self):
+        """Quits the main loop."""
+
         raise NotImplementedError()
 
 
@@ -68,6 +84,10 @@ class GlibMainLoop(MainLoop):
 
 
 def set_type(mltype):
+    """Set a main loop type for non-blocking interfaces.
+
+    mltype: "glib" (currently only glib main loops are supported)"""
+
     global _mainloop_class
 
     if _mainloop_class is not None:

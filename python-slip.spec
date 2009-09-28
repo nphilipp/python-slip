@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.2.5
+Version:    0.2.6
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -92,6 +92,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Mon Sep 28 2009 Nils Philippsen <nils@redhat.com> - 0.2.6-1
+- ship all slip.dbus modules (#525790)
+
 * Thu Sep 24 2009 Nils Philippsen <nils@redhat.com> - 0.2.5-1
 - make polkit checks in dbus services non-blocking
 

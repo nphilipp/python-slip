@@ -23,6 +23,8 @@
 
 """This module contains mainloop wrappers."""
 
+__all__ = ("MainLoop", "set_type")
+
 _mainloop_class = None
 
 

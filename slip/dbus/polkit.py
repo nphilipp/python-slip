@@ -245,6 +245,9 @@ class PolKit(object):
         challenge=True, details={}):
         """Don't call this inside a D-Bus method or signal handler."""
 
+        import warnings
+        warnings.warn("This method is not safe to use in all circumstances. Use IsSystemBusNameAuthorizedAsync() instead.", DeprecationWarning, stacklevel=2)
+
         ml = mainloop.MainLoop()
 
         reply = {}
@@ -324,8 +327,13 @@ def AreAuthorizationsObtainable(authorizations):
 def IsSystemBusNameAuthorized(system_bus_name, action_id, challenge=True,
     details={}):
 
-    return __polkit.IsSystemBusNameAuthorized(system_bus_name, action_id,
-            challenge, details)
+    import warnings
+    warnings.warn("This function is not safe to use in all circumstances. Use IsSystemBusNameAuthorizedAsync() instead.", DeprecationWarning, stacklevel=2)
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        return __polkit.IsSystemBusNameAuthorized(system_bus_name, action_id,
+                challenge, details)
 
 
 def IsSystemBusNameAuthorizedAsync(system_bus_name, action_id,

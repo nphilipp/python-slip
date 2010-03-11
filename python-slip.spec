@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.2.7
+Version:    0.2.8
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -93,6 +93,12 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Thu Mar 11 2010 Nils Philippsen <nils@redhat.com> - 0.2.8-1
+- improve polkit.enable_proxy decorator
+
+* Thu Feb 11 2010 Nils Philippsen <nils@redhat.com>
+- deprecate IsSystemBusNameAuthorized()
+
 * Tue Sep 29 2009 Nils Philippsen <nils@redhat.com> - 0.2.7-1
 - fix persistent service objects
 

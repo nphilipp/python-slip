@@ -27,10 +27,10 @@ import os
 import dbus
 import dbus.mainloop.glib
 import mainloop
+from decorator import decorator
 
-__all__ = ["require_auth", "enable_proxy", "NotAuthorizedException",
-           "IsSystemBusNameAuthorized"]
-
+__all__ = ["require_auth", "enable_proxy", "AUTHFAIL_DONTCATCH",
+           "NotAuthorizedException", "IsSystemBusNameAuthorized"]
 
 def require_auth(polkit_auth):
 
@@ -43,35 +43,119 @@ def require_auth(polkit_auth):
     return require_auth_decorator
 
 
-EXC_NAME = "org.fedoraproject.slip.dbus.service.PolKit.NotAuthorizedException"
+AUTH_EXC_PREFIX = "org.fedoraproject.slip.dbus.service.PolKit.NotAuthorizedException."
 
+class AUTHFAIL_DONTCATCH(object):
+    pass
 
-def enable_proxy(func):
-    if PolKit.polkit_version() == "0":
+def enable_proxy(func=None, authfail_result=AUTHFAIL_DONTCATCH, authfail_exception=None, authfail_callback=None):
+    """Decorator for DBus proxy methods.
 
-        def enable_proxy_wrapper(*p, **k):
-            auth_interface = PolKit._polkit_auth_interface()
-            retval = None
+    Let's you (optionally) specify either a result value or an exception type
+    and a callback which is returned, thrown or called respectively if a
+    PolicyKit authorization doesn't exist or can't be obtained in the DBus
+    mechanism, i.e. an appropriate DBus exception is thrown.
 
-            try:
-                return func(*p, **k)
-            except dbus.DBusException, e:
-                exc_name = e.get_dbus_name()
+    An exception constructor may and a callback must accept an `action_id´
+    parameter which will be set to the id of the PolicyKit action for which
+    authorization could not be obtained.
 
-                action_id = exc_name[len(EXC_NAME) + 1:]
+    You must decorate DBus proxy methods with enable_proxy if you want to use
+    it with legacy PolicyKit versions (i.e. older than 0.9).
+
+    Examples:
+
+    1) Decorate a proxy method for use with PolicyKit < 0.9:
+
+        class MyProxy(object):
+            @polkit.enable_proxy
+            def some_method(self, ...):
+                ...
+
+    2) Return `False´ in the event of an authorization problem, and call
+    `error_handler´:
+
+        def error_handler(action_id=None):
+            print "Authorization problem:", action_id
+
+        class MyProxy(object):
+            @polkit.enable_proxy(authfail_result=False,
+                                 authfail_callback=error_handler)
+            def some_method(self, ...):
+                ...
+
+    3) Throw a `MyAuthError´ instance in the event of an authorization problem:
+
+        class MyAuthError(Exception):
+            def __init__(self, *args, **kwargs):
+                action_id = kwargs.pop("action_id")
+                super(MyAuthError, self).__init__(*args, **kwargs)
+                self.action_id = action_id
+
+        class MyProxy(object):
+            @polkit.enable_proxy(authfail_exception=MyAuthError)
+            def some_method(self, ...):
+                ..."""
+
+    assert(func is None or callable(func))
+
+    assert(authfail_result in (None, AUTHFAIL_DONTCATCH) or authfail_exception is None)
+    assert(authfail_callback is None or callable(authfail_callback))
+    assert(authfail_exception is None or issubclass(authfail_exception, Exception))
+
+    def _enable_proxy(func, *p, **k):
+        pkver = PolKit.polkit_version()
+
+        def handle_authfail(e):
+            assert isinstance(e, dbus.DBusException)
+
+            if authfail_result is AUTHFAIL_DONTCATCH:
+                raise e
+
+            exc_name = e.get_dbus_name()
+
+            if not exc_name.startswith(AUTH_EXC_PREFIX):
+                raise e
+
+            action_id = exc_name[len(AUTH_EXC_PREFIX):]
+
+            if authfail_callback is not None:
+                authfail_callback(action_id=action_id)
+
+            if authfail_exception is not None:
+                try:
+                    raise authfail_exception(action_id=action_id)
+                except:
+                    raise authfail_exception()
+
+            return authfail_result
+
+        try:
+            return func(*p, **k)
+        except dbus.DBusException, e:
+            exc_name = e.get_dbus_name()
+
+            if not exc_name.startswith(AUTH_EXC_PREFIX):
+                raise e
+
+            if pkver == "0":
+                # legacy PolicyKit versions need the frontend to acquire
+                # authorizations
+                action_id = exc_name[len(AUTH_EXC_PREFIX):]
+                auth_interface = PolKit._polkit_auth_interface()
                 obtained = auth_interface.ObtainAuthorization(action_id,
                         dbus.UInt32(0), dbus.UInt32(os.getpid()))
                 if not obtained:
-                    raise
+                    return handle_authfail(e)
             else:
-                raise
+                return handle_authfail(e)
 
-            return func(*p, **k)
-
-        return enable_proxy_wrapper
+    if func is not None:
+        return decorator(_enable_proxy, func)
     else:
-        return func
-
+        def decorate(func):
+            return decorator(_enable_proxy, func)
+        return decorate
 
 class NotAuthorizedException(dbus.DBusException):
 

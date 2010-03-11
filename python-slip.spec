@@ -35,6 +35,7 @@ Requires:   PolicyKit >= 0.8-3
 %else
 Conflicts:  PolicyKit < 0.8-3
 Requires:   polkit >= 0.94
+Requires:   python-decorator
 %endif
 
 %description dbus

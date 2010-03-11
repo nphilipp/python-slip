@@ -33,6 +33,10 @@ __all__ = ["require_auth", "enable_proxy", "AUTHFAIL_DONTCATCH",
            "NotAuthorizedException", "IsSystemBusNameAuthorized"]
 
 def require_auth(polkit_auth):
+    """Decorator for DBus service methods.
+
+    Specify that a user needs a specific PolicyKit authorization `polkit_auth´
+    to execute it."""
 
     def require_auth_decorator(method):
         assert hasattr(method, "_dbus_is_method")
@@ -159,6 +163,9 @@ def enable_proxy(func=None, authfail_result=AUTHFAIL_DONTCATCH, authfail_excepti
 
 class NotAuthorizedException(dbus.DBusException):
 
+    """Exception which a DBus service method throws if an authorization
+    required for executing it can't be obtained."""
+
     _dbus_error_name = \
         "org.fedoraproject.slip.dbus.service.PolKit.NotAuthorizedException"
 
@@ -171,10 +178,14 @@ class NotAuthorizedException(dbus.DBusException):
 
 class VersionError(Exception):
 
-    pass
+    """Exception which gets thrown if no valid PolicyKit version can be
+    determined."""
 
 
 class PolKit(object):
+
+    """Wrapper for PolicyKit which hides some of the differences between
+    different PolicyKit versions."""
 
     polkit_valid_versions = ["1", "0"]
     __polkit_version = None

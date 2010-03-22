@@ -113,9 +113,6 @@ def enable_proxy(func=None, authfail_result=AUTHFAIL_DONTCATCH, authfail_excepti
         def handle_authfail(e):
             assert isinstance(e, dbus.DBusException)
 
-            if authfail_result is AUTHFAIL_DONTCATCH:
-                raise e
-
             exc_name = e.get_dbus_name()
 
             if not exc_name.startswith(AUTH_EXC_PREFIX):
@@ -128,9 +125,13 @@ def enable_proxy(func=None, authfail_result=AUTHFAIL_DONTCATCH, authfail_excepti
 
             if authfail_exception is not None:
                 try:
-                    raise authfail_exception(action_id=action_id)
+                    af_exc = authfail_exception(action_id=action_id)
                 except:
-                    raise authfail_exception()
+                    af_exc = authfail_exception()
+                raise af_exc
+
+            if authfail_result is AUTHFAIL_DONTCATCH:
+                raise e
 
             return authfail_result
 

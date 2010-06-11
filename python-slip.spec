@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.2.9
+Version:    0.2.10
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -30,6 +30,7 @@ Summary:    Convenience functions for dbus services
 Group:      System Environment/Libraries
 Requires:   %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:   dbus-python >= 0.80
+Requires:   pygobject2
 %if 0%{?fedora}%{?rhel} && 0%{?fedora} < 12 && 0%{?rhel} < 6
 Requires:   PolicyKit >= 0.8-3
 %else
@@ -93,6 +94,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Fri Jun 11 2010 Nils Philippsen <nils@redhat.com> - 0.2.10-1
+- add pygobject2 requirement to dbus subpackage
+
 * Mon Mar 22 2010 Nils Philippsen <nils@redhat.com> - 0.2.9-1
 - fix throwing auth fail exceptions
 

@@ -129,7 +129,7 @@ def copyfile(srcpath, dstpath, copy_mode_from_dst=True, run_restorecon=True):
             srcfile.close()
             dsttmpfile.close()
             os.unlink(dsttmpfile.name)
-            raise ioe
+            raise
 
     srcfile.close()
     dsttmpfile.close()
@@ -153,7 +153,7 @@ def linkorcopyfile(srcpath, dstpath, copy_mode_from_dst=True,
 
             # don't bother copying
 
-            raise e
+            raise
         else:
 
             # try copying

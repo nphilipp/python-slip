@@ -55,7 +55,7 @@ def issamefile(path1, path2, catch_stat_exceptions=[]):
 def linkfile(srcpath, dstpath):
     """Hardlink srcpath to dstpath.
 
-Attempt to atomically replace dstpath if it exists."""
+    Attempt to atomically replace dstpath if it exists."""
 
     if issamefile(srcpath, dstpath, catch_stat_exceptions=OSError):
         return
@@ -89,8 +89,8 @@ Attempt to atomically replace dstpath if it exists."""
 def copyfile(srcpath, dstpath, copy_mode_from_dst=True, run_restorecon=True):
     """Copy srcpath to dstpath.
 
-Abort operation if e.g. not enough space is available.
-Attempt to atomically replace dstpath if it exists."""
+    Abort operation if e.g. not enough space is available.  Attempt to
+    atomically replace dstpath if it exists."""
 
     if issamefile(srcpath, dstpath, catch_stat_exceptions=OSError):
         return
@@ -142,8 +142,8 @@ Attempt to atomically replace dstpath if it exists."""
 
 def linkorcopyfile(srcpath, dstpath, copy_mode_from_dst=True,
     run_restorecon=True):
-    """First attempt to hardlink srcpath to dstpath, if hardlinking isn't possible,
-attempt copying srcpath to dstpath."""
+    """First attempt to hardlink srcpath to dstpath, if hardlinking isn't
+    possible, attempt copying srcpath to dstpath."""
 
     try:
         linkfile(srcpath, dstpath)

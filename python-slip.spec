@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.2.10
+Version:    0.2.11
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -94,6 +94,10 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Wed Jun 30 2010 Nils Philippsen <nils@redhat.com> - 0.2.11-1
+- fix re-raising exceptions
+- add slip.util.files.overwrite_safely()
+
 * Fri Jun 11 2010 Nils Philippsen <nils@redhat.com> - 0.2.10-1
 - add pygobject2 requirement to dbus subpackage
 

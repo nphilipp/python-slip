@@ -20,7 +20,8 @@
 
 """This module contains helper functions for dealing with files."""
 
-__all__ = ["issamefile", "linkfile", "copyfile", "linkorcopyfile"]
+__all__ = ["issamefile", "linkfile", "copyfile", "linkorcopyfile",
+           "overwrite_safely"]
 
 import os
 import selinux
@@ -162,4 +163,59 @@ def linkorcopyfile(srcpath, dstpath, copy_mode_from_dst=True,
 
     copyfile(srcpath, dstpath, copy_mode_from_dst, run_restorecon)
 
+def overwrite_safely(path, content, preserve_mode=True, preserve_context=True):
+    """Safely overwrite a file by creating a temporary file in the same
+    directory, writing it, moving it over the original file, eventually
+    preserving file mode and SELinux context."""
 
+    path = os.path.realpath(path)
+    dir_ = os.path.dirname(path)
+    base = os.path.basename(path)
+
+    fd = None
+    f = None
+    tmpname = None
+
+    exists = os.path.exists(path)
+
+    if preserve_context and selinux.is_selinux_enabled() < 0:
+        preserve_context = False
+
+    try:
+        fd, tmpname = tempfile.mkstemp(prefix=base + os.path.extsep,
+                                       dir=dir_)
+
+        if exists and preserve_mode:
+            shutil.copymode(path, tmpname)
+
+        if exists and preserve_context:
+            ret, ctx = selinux.getfilecon(path)
+            if ret < 0:
+                raise RuntimeError("getfilecon(%r) failed" % path)
+
+        f = os.fdopen(fd, "w")
+        fd = None
+
+        f.write(content)
+
+        f.close()
+        f = None
+
+        os.rename(tmpname, path)
+
+        if preserve_context:
+            if exists:
+                selinux.setfilecon(path, ctx)
+            else:
+                selinux.restorecon(path)
+
+    finally:
+        if f:
+            f.close()
+        elif fd:
+            os.close(fd)
+        if tmpname and os.path.isfile(tmpname):
+            try:
+                os.unlink(tmpname)
+            except:
+                pass

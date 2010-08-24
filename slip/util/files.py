@@ -61,7 +61,7 @@ def linkfile(srcpath, dstpath):
     if issamefile(srcpath, dstpath, catch_stat_exceptions=OSError):
         return
 
-    dstpath = os.path.realpath(dstpath)
+    dstpath = os.path.abspath(dstpath)
     dstdname = os.path.dirname(dstpath)
     dstbname = os.path.basename(dstpath)
 
@@ -96,7 +96,7 @@ def copyfile(srcpath, dstpath, copy_mode_from_dst=True, run_restorecon=True):
     if issamefile(srcpath, dstpath, catch_stat_exceptions=OSError):
         return
 
-    dstpath = os.path.realpath(dstpath)
+    dstpath = os.path.abspath(dstpath)
     dstdname = os.path.dirname(dstpath)
     dstbname = os.path.basename(dstpath)
 

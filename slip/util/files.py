@@ -88,7 +88,7 @@ def copyfile(srcpath, dstpath, copy_mode_from_dst=True, run_restorecon=True):
     dstbname = os.path.basename(dstpath)
 
     srcfile = open(srcpath, "rb")
-    dsttmpfile = tempfile.NamedTemporaryFile(prefix=dstbname + ".",
+    dsttmpfile = tempfile.NamedTemporaryFile(prefix=dstbname + os.path.extsep,
             dir=dstdname, delete=False)
 
     mode_copied = False

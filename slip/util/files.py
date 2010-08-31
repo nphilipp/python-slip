@@ -33,8 +33,6 @@ BLOCKSIZE = 1024
 
 
 def _issamefile(path1, path2):
-    issame = False
-
     s1 = os.stat(path1)
     s2 = os.stat(path2)
 

@@ -165,7 +165,7 @@ def overwrite_safely(path, content, preserve_mode=True, preserve_context=True):
 
     exists = os.path.exists(path)
 
-    if preserve_context and selinux.is_selinux_enabled() < 0:
+    if preserve_context and selinux.is_selinux_enabled() <= 0:
         preserve_context = False
 
     try:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright © 2009 Red Hat, Inc.
+# Copyright © 2009, 2010 Red Hat, Inc.
 # Authors:
 # Nils Philippsen <nils@redhat.com>
 #

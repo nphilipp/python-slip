@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.2.12
+Version:    0.2.13
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -94,6 +94,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Tue Aug 31 2010 Nils Philippsen <nils@redhat.com> - 0.2.13-1
+- revert "use tempfile.mkstemp"
+
 * Tue Aug 24 2010 Nils Philippsen <nils@redhat.com> - 0.2.12-1
 - use os.path.abspath instead of .realpath (#615819)
 - use tempfile.mkstemp

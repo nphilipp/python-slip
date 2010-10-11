@@ -141,7 +141,7 @@ def enable_proxy(func=None, authfail_result=AUTHFAIL_DONTCATCH, authfail_excepti
             exc_name = e.get_dbus_name()
 
             if not exc_name.startswith(AUTH_EXC_PREFIX):
-                raise e
+                raise
 
             if pkver == "0":
                 # legacy PolicyKit versions need the frontend to acquire

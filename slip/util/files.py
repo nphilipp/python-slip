@@ -79,7 +79,7 @@ def linkfile(srcpath, dstpath):
 
                 pass
             else:
-                raise e
+                raise
 
     if hardlinked:
         os.rename(_tmpfilename, dstpath)

@@ -3,7 +3,7 @@
 # slip.dbus.proxies -- slightly augmented dbus proxy classes
 #
 # Copyright © 2005-2007 Collabora Ltd. <http://www.collabora.co.uk/>
-# Copyright © 2009 Red Hat, Inc.
+# Copyright © 2009, 2011 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,26 +25,17 @@
 """This module contains D-Bus proxy classes which implement the default
 timeout of the augmented bus classes in slip.dbus.bus."""
 
-import dbus
 import dbus.proxies
+
+import constants
 
 
 class _ProxyMethod(dbus.proxies._ProxyMethod):
 
     def __call__(self, *args, **kwargs):
-        default_timeout = getattr(self._proxy._bus, "default_timeout", -1.0)
+        default_timeout = getattr(self._proxy._bus, "default_timeout",
+                constants.method_call_no_timeout)
         kwargs.setdefault("timeout", default_timeout)
-
-        # older dbus versions don't know "no timeout", so make it as large as
-        # it gets
-
-        if dbus.version < (0, 84, 0) and kwargs["timeout"] is None:
-            from gobject import G_MAXINT
-
-            # timeout is x seconds in dbus-python, but milliseconds in the dbus
-            # library
-
-            kwargs["timeout"] = G_MAXINT / 1000
 
         return dbus.proxies._ProxyMethod.__call__(self, *args, **kwargs)
 

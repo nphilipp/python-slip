@@ -23,7 +23,7 @@
 
 import dbus
 
-if dbus.version < (0, 84, 0):
+if dbus.version < (0, 82, 4):
     from gobject import G_MAXINT
     # old versions of the dbus module don't know about waiting forever, so wait
     # for a very long time (not quite 25 days) instead

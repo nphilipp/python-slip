@@ -29,6 +29,8 @@ import dbus.mainloop.glib
 import mainloop
 from decorator import decorator
 
+from constants import method_call_no_timeout
+
 __all__ = ["require_auth", "enable_proxy", "AUTHFAIL_DONTCATCH",
            "NotAuthorizedException", "IsSystemBusNameAuthorized"]
 
@@ -297,22 +299,6 @@ class PolKit(object):
 
         return is_authorized or is_challenge
 
-    @classmethod
-    def _no_or_long_timeout(cls):
-        if not hasattr(cls, "__no_or_long_timeout"):
-            if dbus.version < (0, 84, 0):
-                import gobject
-
-                # dbus-python uses seconds and the C library milliseconds
-
-                cls.__no_or_long_timeout = gobject.G_MAXINT / 1000.0
-            else:
-
-                # timeout == None shall mean no timeout
-
-                cls.__no_or_long_timeout = None
-            return cls.__no_or_long_timeout
-
     def AreAuthorizationsObtainable(self, authorizations):
         if not self._polkitd_interface():
             return False
@@ -390,7 +376,7 @@ class PolKit(object):
         self._polkitd_interface().IsSystemBusNameAuthorized(action_id,
             system_bus_name, revoke_if_one_shot,
             reply_handler=reply_cb, error_handler=error_handler,
-            timeout=self._no_or_long_timeout())
+            timeout=method_call_no_timeout)
 
     def IsSystemBusNameAuthorizedAsync_1(self, system_bus_name, action_id,
         reply_handler, error_handler,
@@ -410,7 +396,7 @@ class PolKit(object):
                                    action_id, details, flags, "",
                                    reply_handler=reply_cb,
                                    error_handler=error_handler,
-                                   timeout=self._no_or_long_timeout())
+                                   timeout=method_call_no_timeout)
 
 
 __polkit = PolKit()

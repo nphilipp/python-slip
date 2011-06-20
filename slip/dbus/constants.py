@@ -21,13 +21,13 @@
 
 """This module contains some constant values."""
 
-import dbus
-
-if dbus.version < (0, 82, 4):
-    from gobject import G_MAXINT
-    # old versions of the dbus module don't know about waiting forever, so wait
-    # for a very long time (not quite 25 days) instead
-    method_call_no_timeout = G_MAXINT / 1000.0
-else:
-    # wait forever
-    method_call_no_timeout = -1.0
+# The maximum value of a 32bit signed integer is the magic value to indicate an
+# infinite timeout for dbus. Unlike the C interface which deals with
+# milliseconds as integers, the python interface uses seconds as floats for the
+# timeout. Therefore we need to use the Python float (C double) value that
+# gives 0x7FFFFFFF if multiplied by 1000.0 and cast into an integer.
+#
+# This calculation should be precise enough to get a value of 0x7FFFFFFF on the
+# C side. If not, it will still amount to a very long time (not quite 25 days)
+# which should be enough for all intents and purposes.
+method_call_no_timeout = 0x7FFFFFFF / 1000.0

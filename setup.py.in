@@ -7,8 +7,8 @@ setup(name="slip", version="@VERSION@", py_modules=["slip.__init__",
       "slip.util.__init__", "slip.util.hookable", "slip.util.files"])
 
 setup(name="slip.dbus", version="@VERSION@", py_modules=["slip.dbus.__init__",
-      "slip.dbus.bus", "slip.dbus.mainloop", "slip.dbus.polkit",
-      "slip.dbus.proxies", "slip.dbus.service"])
+      "slip.dbus.bus", "slip.dbus.constants", "slip.dbus.mainloop",
+      "slip.dbus.polkit", "slip.dbus.proxies", "slip.dbus.service"])
 
 setup(name="slip.gtk", version="@VERSION@", py_modules=["slip.gtk.__init__",
       "slip.gtk.tools"])

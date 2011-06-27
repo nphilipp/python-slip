@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.2.16
+Version:    0.2.17
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -94,6 +94,10 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Mon Jun 27 2011 Nils Philippsen <nils@redhat.com> - 0.2.17-1
+- fix default timeouts of None in bus objects (#716620)
+- reduce proxy method calling overhead a bit more
+
 * Tue Jun 21 2011 Nils Philippsen <nils@redhat.com> - 0.2.16-1
 - actually distribute slip.dbus.constants module (#714980)
 

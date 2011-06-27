@@ -32,12 +32,20 @@ import constants
 
 class _ProxyMethod(dbus.proxies._ProxyMethod):
 
+    _connections_default_timeouts = {}
+
+    @property
+    def default_timeout(self):
+        if self._connection not in self._connections_default_timeouts:
+            dt = getattr(self._proxy._bus, "default_timeout", None)
+            if dt is None:
+                dt = constants.method_call_no_timeout
+            self._connections_default_timeouts[self._connection] = dt
+        return self._connections_default_timeouts[self._connection]
+
     def __call__(self, *args, **kwargs):
-        default_timeout = getattr(self._proxy._bus, "default_timeout", None)
-        if default_timeout is None:
-                default_timeout = constants.method_call_no_timeout
         if kwargs.get('timeout') is None:
-            kwargs["timeout"] = default_timeout
+            kwargs["timeout"] = self.default_timeout
 
         return dbus.proxies._ProxyMethod.__call__(self, *args, **kwargs)
 

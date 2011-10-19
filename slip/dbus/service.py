@@ -201,6 +201,8 @@ class Object(dbus.service.Object):
         super(Object, self).__init__(conn, object_path, bus_name)
         if persistent == None:
             self.persistent = self.__class__.persistent
+        else:
+            self.persistent = persistent
 
     def _timeout_cb(self):
         if not self.persistent and len(Object.senders) == 0:

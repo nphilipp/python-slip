@@ -85,24 +85,26 @@ def wrap_method(method):
     hide_async_callbacks = not method_is_async
 
     def wrapped_method(self, *p, **k):
-        sender = k[sender_keyword]
-        reply_cb = k[async_callbacks[0]]
-        error_cb = k[async_callbacks[1]]
+        sender = k.get(sender_keyword)
+        if sender is not None:
+            # i.e. called over the bus, not locally
+            reply_cb = k[async_callbacks[0]]
+            error_cb = k[async_callbacks[1]]
 
-        if hide_sender_keyword:
-            del k[sender_keyword]
+            if hide_sender_keyword:
+                del k[sender_keyword]
 
-        if hide_async_callbacks:
-            del k[async_callbacks[0]]
-            del k[async_callbacks[1]]
+            if hide_async_callbacks:
+                del k[async_callbacks[0]]
+                del k[async_callbacks[1]]
 
-        self.sender_seen(sender)
+            self.sender_seen(sender)
 
         action_id = getattr(method, "_slip_polkit_auth_required",
                             getattr(self, "default_polkit_auth_required",
                                     None))
 
-        if action_id:
+        if sender is not None and action_id:
 
             def reply_handler(is_auth):
                 if is_auth:
@@ -145,9 +147,7 @@ def wrap_method(method):
             polkit.IsSystemBusNameAuthorizedAsync(sender, action_id,
                     reply_handler=reply_handler, error_handler=error_handler)
         else:
-
-            # no action id, no need to do anything fancy
-
+            # no action id, or run locally, no need to do anything fancy
             retval = method(self, *p, **k)
             self.timeout_restart()
             return retval

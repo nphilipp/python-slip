@@ -10,9 +10,11 @@ setup(name="slip", version="@VERSION@",
 
 setup(name="slip.dbus", version="@VERSION@",
         py_modules=["slip.dbus.__init__", "slip.dbus.bus",
-            "slip.dbus.constants", "slip.dbus.mainloop", "slip.dbus.polkit",
-            "slip.dbus.proxies", "slip.dbus.service"],
-        requires=["dbus", "decorator", "gobject"])
+            "slip.dbus.constants", "slip.dbus.introspection",
+            "slip.dbus.mainloop", "slip.dbus.polkit", "slip.dbus.proxies",
+            "slip.dbus.service"],
+        requires=["cStringIO", "dbus", "decorator", "gobject",
+            "xml.etree.ElementTree"])
 
 setup(name="slip.gtk", version="@VERSION@",
         py_modules=["slip.gtk.__init__", "slip.gtk.tools"],

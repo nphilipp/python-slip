@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.2.18
+Version:    0.2.19
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -94,6 +94,10 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Thu Nov 03 2011 Nils Philippsen <nils@redhat.com> - 0.2.19-1
+- allow service object methods to be called locally
+- preserve signature, docstrings, etc. of decorated methods
+
 * Wed Oct 19 2011 Nils Philippsen <nils@redhat.com> - 0.2.18-1
 - actually use persistent value in Object constructor
 

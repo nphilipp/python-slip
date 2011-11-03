@@ -8,6 +8,8 @@ ifndef SCM_LOCAL_BRANCH
 	SCM_LOCAL_BRANCH = $(SCM_REMOTE_BRANCH)
 endif
 
+SCM_SNAP_TAG = git
+
 SCM_ACTUAL_REMOTE_BRANCH = $(notdir $(shell git config branch.$(SCM_LOCAL_BRANCH).merge))
 
 SCM_REMOTEREPO_NAME = $(shell git config branch.$(SCM_LOCAL_BRANCH).remote)
@@ -24,9 +26,10 @@ SCM_LAST_TAG = $(shell git ls-remote --tags $(SCM_REMOTEREPO_NAME) | while read 
 SCM_DIFF_TAG_COMMAND = git diff $(SCM_TAG)
 SCM_DIFF_LAST_TAG_COMMAND = git diff $(SCM_LAST_TAG)
 SCM_PUSH_REMOTE_COMMAND = { git push $(SCM_REMOTEREPO_NAME) $(SCM_LOCAL_BRANCH):$(SCM_REMOTE_BRANCH) && git push $(SCM_REMOTEREPO_NAME) $(SCM_TAG); }
-SCM_SNAP_ARCHIVE_COMMAND = git archive --format=tar --prefix=$(PKGNAME)-$(PKGVERSION)/ HEAD | bzip2 -9 > $(PKGNAME)-$(PKGVERSION).tar.bz2
+SCM_SNAP_ARCHIVE_COMMAND = git archive --format=tar --prefix=$(PKGNAME)-$(SCM_SNAP_VERSION)/ HEAD | bzip2 -9 > $(PKGNAME)-$(SCM_SNAP_VERSION).tar.bz2
 SCM_ARCHIVE_COMMAND = git archive --format=tar --prefix=$(PKGNAME)-$(PKGVERSION)/ $(SCM_TAG) | bzip2 -9 > $(PKGNAME)-$(PKGVERSION).tar.bz2
 SCM_LASTLOG_COMMAND = git log --stat $(SCM_TAG).. $(SCM_LOG_PATHS)
 SCM_CHANGED_FILES_SINCE_TAG_COMMAND = git diff --stat $(SCM_TAG)
+SCM_REVISION_CMD = git rev-parse --verify HEAD
 
 include scm_rules.mk

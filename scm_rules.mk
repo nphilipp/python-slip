@@ -17,6 +17,20 @@ ifndef SCM_TAG
 	SCM_TAG = $(PKGNAME)-$(subst .,_,$(PKGVERSION))
 endif
 
+ifndef DATETIME_CMD
+	DATETIME_CMD = date -u "+%%Y%%m%%d_%%H%%M%%S"
+endif
+
+ifndef SCM_REVISION_CMD
+	SCM_REVISION_CMD = $(DATETIME_CMD)
+endif
+
+ifndef SCM_SNAP_TAG
+	SCM_SNAP_TAG = snap
+endif
+
+SCM_SNAP_VERSION = $(PKGVERSION)-$(SCM_SNAP_TAG)-$(shell $(SCM_REVISION_CMD))
+
 ifndef FORCETAG
 	SCM_FORCE_FLAG =
 else
@@ -102,7 +116,7 @@ endif
 
 snaparchive:
 	@$(SCM_SNAP_ARCHIVE_COMMAND)
-	@echo "The _local_ snapshot archive is in ${PKGNAME}-$(PKGVERSION).tar.bz2"
+	@echo "The _local_ snapshot archive is in ${PKGNAME}-$(SCM_SNAP_VERSION).tar.bz2"
 
 dif:	diff
 

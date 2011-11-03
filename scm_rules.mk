@@ -70,6 +70,11 @@ incoming: checkrepo
 		exit 1; \
 	fi
 
+ifdef UNSTABLE
+tag archivepush archive:
+	@echo Use of target \'$@\' not possible in unstable branch. >&2
+	@exit 1
+else
 tag:
 ifndef FORCETAG
 	@if $(SCM_CHECK_TAG); then \
@@ -113,6 +118,7 @@ ifndef FORCEARCHIVE
 endif
 	@$(SCM_ARCHIVE_COMMAND)
 	@echo "The archive is in ${PKGNAME}-$(PKGVERSION).tar.bz2"
+endif
 
 snaparchive:
 	@$(SCM_SNAP_ARCHIVE_COMMAND)

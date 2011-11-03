@@ -1,6 +1,11 @@
 # License: GPL v2 or later
 # Copyright Red Hat Inc. 2008
 
+ifdef UNSTABLE
+upload:
+	@echo Use of target \'$@\' not possible in unstable branch. >&2
+	@exit 1
+else
 ifdef UPLOAD_URL
 upload:
 	@url="$(UPLOAD_URL)"; \
@@ -17,4 +22,5 @@ upload:
 		exit 1; \
 		;; \
 	esac
+endif
 endif

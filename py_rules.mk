@@ -5,6 +5,14 @@ ifndef DESTDIR
 	DESTDIR = /
 endif
 
+ifndef PREFIX
+	PREFIX = /usr
+endif
+
+ifndef EXEC_PREFIX
+	EXEC_PREFIX = $(PREFIX)
+endif
+
 ifndef PY_SOURCES
 	PY_SOURCES = $(wildcard src/*.py)
 endif
@@ -33,7 +41,11 @@ py-build:   $(_SETUP_PY) $(PY_SOURCES)
 
 py-install:	$(_SETUP_PY)
 	cd $(PY_TOPDIR); \
-	python $(SETUP_PY) install -O1 --skip-build --root $(DESTDIR)
+	python $(SETUP_PY) install -O1 \
+		--root $(DESTDIR) \
+		--prefix $(PREFIX) \
+		--exec-prefix $(EXEC_PREFIX) \
+		--skip-build
 
 py-clean:	$(_SETUP_PY)
 	cd $(PY_TOPDIR); \

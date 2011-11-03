@@ -4,7 +4,7 @@
 """Classes and functions to easily access DBus introspection data."""
 
 from xml.etree.ElementTree import ElementTree
-from cStringIO import StringIO
+from StringIO import StringIO
 
 class IElemMeta(type):
     """Metaclass for introspection elements.

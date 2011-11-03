@@ -13,7 +13,7 @@ setup(name="slip.dbus", version="@VERSION@",
             "slip.dbus.constants", "slip.dbus.introspection",
             "slip.dbus.mainloop", "slip.dbus.polkit", "slip.dbus.proxies",
             "slip.dbus.service"],
-        requires=["cStringIO", "dbus", "decorator", "gobject",
+        requires=["dbus", "decorator", "gobject", "StringIO",
             "xml.etree.ElementTree"])
 
 setup(name="slip.gtk", version="@VERSION@",

@@ -117,7 +117,9 @@ class IElemSignal(IElem, IElemNameMixin):
 
 def introspect(string_or_file):
     tree = ElementTree()
-    if isinstance(string_or_file, basestring):
+    # assume string if read() method doesn't exist, works for string, unicode,
+    # dbus.String
+    if not hasattr(string_or_file, "read"):
         string_or_file = StringIO(string_or_file)
     xml_root = tree.parse(string_or_file)
     elem_root = IElem(xml_root)

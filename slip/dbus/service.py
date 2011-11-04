@@ -25,8 +25,6 @@
 import dbus
 import dbus.service
 
-from decorator import decorator
-
 import gobject
 
 import polkit
@@ -67,7 +65,6 @@ ASYNC_CALLBACKS = ("__slip_dbus_service_reply_cb__",
                    "__slip_dbus_service_error_cb__")
 
 
-@decorator
 def wrap_method(method):
     global SENDER_KEYWORD
     global ASYNC_CALLBACKS
@@ -87,7 +84,6 @@ def wrap_method(method):
         method_is_async = False
     hide_async_callbacks = not method_is_async
 
-    @decorator
     def wrapped_method(self, *p, **k):
         sender = k.get(sender_keyword)
         if sender is not None:
@@ -165,6 +161,8 @@ def wrap_method(method):
             setattr(wrapped_method, attr, getattr(method, attr))
 
         # delattr (method, attr)
+
+    wrapped_method.func_name = method.func_name
 
     return wrapped_method
 

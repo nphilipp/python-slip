@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.2.19
+Version:    0.2.20
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -94,6 +94,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Fri Nov 28 2011 Nils Philippsen <nils@redhat.com> - 0.2.20-1
+- revert "preserve signature, docstrings, etc. of decorated methods" (#757517)
+
 * Thu Nov 03 2011 Nils Philippsen <nils@redhat.com> - 0.2.19-1
 - allow service object methods to be called locally
 - preserve signature, docstrings, etc. of decorated methods

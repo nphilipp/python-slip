@@ -2,7 +2,7 @@
 
 # slip.dbus.mainloop -- mainloop wrappers
 #
-# Copyright © 2009 Red Hat, Inc.
+# Copyright © 2009, 2012 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,11 +21,11 @@
 # Authors:
 # Nils Philippsen <nils@redhat.com>
 
-"""This module contains mainloop wrappers."""
+"""This module contains mainloop wrappers.
+
+Currently only glib main loops are supported."""
 
 __all__ = ("MainLoop", "set_type")
-
-_mainloop_class = None
 
 
 class MainLoop(object):
@@ -36,11 +36,31 @@ class MainLoop(object):
 
     Actual main loop wrapper classes are derived from this class."""
 
+    __mainloop_class = None
+
     def __new__(cls, *args, **kwargs):
         global _mainloop_class
-        if _mainloop_class is None:
-            set_type("glib")
-        return super(MainLoop, cls).__new__(_mainloop_class, *args, **kwargs)
+        if MainLoop._mainloop_class is None:
+            MainLoop.set_type("glib")
+        return super(MainLoop, cls).__new__(MainLoop.__mainloop_class,
+                *args, **kwargs)
+
+    @classmethod
+    def set_type(cls, mltype):
+        """Set a main loop type for non-blocking interfaces.
+
+        mltype: "glib" (currently only glib main loops are supported)"""
+
+        if MainLoop.__mainloop_class is not None:
+            raise RuntimeError("The main loop type can only be set once.")
+
+        ml_type_class = {"glib": GlibMainLoop}
+
+        if mltype in ml_type_class:
+            MainLoop.__mainloop_class = ml_type_class[mltype]
+        else:
+            raise ValueError("'%s' is not one of the valid main loop types (%s)." %
+                              (mltype, ",".join(ml_type_class.keys())))
 
     def pending(self):
         """Returns if there are pending events."""
@@ -86,19 +106,12 @@ class GlibMainLoop(MainLoop):
 def set_type(mltype):
     """Set a main loop type for non-blocking interfaces.
 
-    mltype: "glib" (currently only glib main loops are supported)"""
+    mltype: "glib" (currently only glib main loops are supported)
 
-    global _mainloop_class
+    Deprecated, use MainLoop.set_type() instead."""
 
-    if _mainloop_class is not None:
-        raise RuntimeError("The main loop type can only be set once.")
+    from warnings import warn
 
-    ml_type_class = {"glib": GlibMainLoop}
+    warn("use MainLoop.set_type() instead", DeprecationWarning)
 
-    if mltype in ml_type_class:
-        _mainloop_class = ml_type_class[mltype]
-    else:
-        raise ValueError("'%s' is not one of the valid main loop types (%s)." %
-                          (mltype, ",".join(ml_type_class.keys())))
-
-
+    MainLoop.set_type(mltype)

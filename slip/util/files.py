@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright © 2009, 2010 Red Hat, Inc.
+# Copyright © 2009, 2010, 2012 Red Hat, Inc.
 # Authors:
 # Nils Philippsen <nils@redhat.com>
 #
@@ -160,6 +160,65 @@ def linkorcopyfile(srcpath, dstpath, copy_mode_from_dst=True,
             pass
 
     copyfile(srcpath, dstpath, copy_mode_from_dst, run_restorecon)
+
+def symlink_atomically(srcpath, dstpath, force=False, preserve_context=True):
+    """Create a symlink, optionally replacing dstpath atomically, optionally
+    setting or preserving SELinux context."""
+
+    dstdname = os.path.dirname(dstpath)
+    dstbname = os.path.basename(dstpath)
+
+    run_restorecon = False
+    ctx = None
+
+    if preserve_context and selinux.is_selinux_enabled() <= 0:
+        preserve_context = False
+    else:
+        try:
+            ret, ctx = selinux.lgetfilecon(dstpath)
+            if ret < 0:
+                raise RuntimeError("getfilecon(%r) failed" % dstpath)
+        except OSError, e:
+            if e.errno == errno.ENOENT:
+                run_restorecon = True
+            else:
+                raise
+
+    if not force:
+        os.symlink(srcpath, dstpath)
+        if preserve_context:
+            selinux.restorecon(dstpath)
+    else:
+        dsttmp = None
+        for attempt in xrange(tempfile.TMP_MAX):
+            _dsttmp = tempfile.mktemp(prefix=dstbname + os.extsep, dir=dstdname)
+            try:
+                os.symlink(srcpath, _dsttmp)
+            except OSError, e:
+                if e.errno == errno.EEXIST:
+                    # try again
+                    continue
+                raise
+            else:
+                dsttmp = _dsttmp
+                break
+
+        if dsttmp is None:
+            raise IOError(errno.EEXIST,
+                    "No suitable temporary symlink could be created.")
+
+        if preserve_context and not run_restorecon:
+            selinux.lsetfilecon(dsttmp, ctx)
+
+        try:
+            os.rename(dsttmp, dstpath)
+        except:
+            # clean up
+            os.remove(dsttmp)
+            raise
+
+        if run_restorecon:
+            selinux.restorecon(dstpath)
 
 def overwrite_safely(path, content, preserve_mode=True, preserve_context=True):
     """Safely overwrite a file by creating a temporary file in the same

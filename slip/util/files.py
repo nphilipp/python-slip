@@ -63,15 +63,11 @@ def linkfile(srcpath, dstpath):
     dstdname = os.path.dirname(dstpath)
     dstbname = os.path.basename(dstpath)
 
-    attempts = tempfile.TMP_MAX
     hardlinked = False
-    while attempts > 0:
-        attempts -= 1
-        _tmpfilename = tempfile.mktemp(prefix=dstbname + ".", dir=dstdname)
+    for attempt in xrange(tempfile.TMP_MAX):
+        _dsttmp = tempfile.mktemp(prefix=dstbname + os.extsep, dir=dstdname)
         try:
-            os.link(srcpath, _tmpfilename)
-            hardlinked = True
-            break
+            os.link(srcpath, _dsttmp)
         except OSError, e:
             if e.errno == errno.EEXIST:
 
@@ -80,9 +76,12 @@ def linkfile(srcpath, dstpath):
                 pass
             else:
                 raise
+        else:
+            hardlinked = True
+            break
 
     if hardlinked:
-        os.rename(_tmpfilename, dstpath)
+        os.rename(_dsttmp, dstpath)
 
 
 def copyfile(srcpath, dstpath, copy_mode_from_dst=True, run_restorecon=True):

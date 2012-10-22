@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.2.20
+Version:    0.2.21
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -94,6 +94,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Mon Oct 22 2012 Nils Philippsen <nils@redhat.com> - 0.2.21-1
+- add slip.util.files.symlink_atomically()
+
 * Fri Nov 28 2011 Nils Philippsen <nils@redhat.com> - 0.2.20-1
 - revert "preserve signature, docstrings, etc. of decorated methods" (#757517)
 

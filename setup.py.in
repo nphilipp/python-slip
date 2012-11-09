@@ -5,7 +5,8 @@ from distutils.core import setup
 
 setup(name="slip", version="@VERSION@",
         py_modules=["slip.__init__", "slip.util.__init__",
-            "slip.util.hookable", "slip.util.files"],
+            "slip.util.hookable", "slip.util.files",
+            "slip._wrappers.__init__", "slip._wrappers._gobject"],
         requires=["selinux"])
 
 setup(name="slip.dbus", version="@VERSION@",

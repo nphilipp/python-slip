@@ -12,7 +12,7 @@ setup(name="slip.dbus", version="@VERSION@",
         py_modules=["slip.dbus.__init__", "slip.dbus.bus",
             "slip.dbus.constants", "slip.dbus.mainloop", "slip.dbus.polkit",
             "slip.dbus.proxies", "slip.dbus.service"],
-        requires=["dbus", "decorator", "gobject"])
+        requires=["dbus", "decorator"])
 
 setup(name="slip.gtk", version="@VERSION@",
         py_modules=["slip.gtk.__init__", "slip.gtk.tools"],

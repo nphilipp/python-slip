@@ -30,7 +30,9 @@ Summary:    Convenience functions for dbus services
 Group:      System Environment/Libraries
 Requires:   %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:   dbus-python >= 0.80
-Requires:   pygobject2
+# Don't require any of pygobject2/3 because slip.dbus works with either one. In
+# theory users of slip.dbus should require one or the other anyway to use the
+# main loop.
 %if 0%{?fedora}%{?rhel} && 0%{?fedora} < 12 && 0%{?rhel} < 6
 Requires:   PolicyKit >= 0.8-3
 %else

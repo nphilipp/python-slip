@@ -82,6 +82,7 @@ rm -rf %buildroot
 %dir %{python_sitelib}/slip/
 %{python_sitelib}/slip/__init__.py*
 %{python_sitelib}/slip/util
+%{python_sitelib}/slip/_wrappers
 %{python_sitelib}/slip-%{version}-py%{python_version}.egg-info
 
 %files dbus

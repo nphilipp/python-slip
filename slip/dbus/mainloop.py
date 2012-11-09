@@ -92,8 +92,8 @@ class MainLoop(object):
 class GlibMainLoop(MainLoop):
 
     def __init__(self):
-        import gobject
-        ml = gobject.MainLoop()
+        from slip._wrappers import _gobject
+        ml = _gobject.MainLoop()
         ctx = ml.get_context()
 
         self._mainloop = ml

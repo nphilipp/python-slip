@@ -26,12 +26,21 @@ __all__ = ['MainLoop', 'source_remove', 'timeout_add']
 
 _self = sys.modules[__name__]
 
-if 'gobject' in sys.modules:
-    _mod = sys.modules['gobject']
-#if 'gi.repository.GObject' in sys.modules:
-else:
-    import gi.repository.GObject
-    _mod = gi.repository.GObject
+_mod = None
+
+while _mod is None:
+    if 'gobject' in sys.modules:
+        _mod = sys.modules['gobject']
+    elif 'gi.repository.GObject' in sys.modules:
+        _mod = sys.modules['gi.repository.GObject']
+    # if not yet imported, try to import gobject first, then
+    # gi.repository.GObject ...
+    if _mod is None:
+        try:
+            import gobject
+        except ImportError:
+            import gi.repository.GObject
+    # ... then repeat.
 
 for what in __all__:
     if what not in dir(_self):

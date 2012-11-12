@@ -36,8 +36,9 @@ Requires:   dbus-python >= 0.80
 %if 0%{?fedora}%{?rhel} && 0%{?fedora} < 12 && 0%{?rhel} < 6
 Requires:   PolicyKit >= 0.8-3
 %else
+# No hard requirement on polkit to allow minimal installs without polkit and
+# its dependencies.
 Conflicts:  PolicyKit < 0.8-3
-Requires:   polkit >= 0.94
 Requires:   python-decorator
 %endif
 

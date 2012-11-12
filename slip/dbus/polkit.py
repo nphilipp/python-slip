@@ -3,7 +3,7 @@
 # slip.dbus.polkit -- convenience decorators and functions for using PolicyKit
 # with dbus services and clients
 #
-# Copyright © 2008, 2009 Red Hat, Inc.
+# Copyright © 2008, 2009, 2012 Red Hat, Inc.
 # Authors: Nils Philippsen <nils@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -179,19 +179,13 @@ class NotAuthorizedException(dbus.DBusException):
         super(NotAuthorizedException, self).__init__(*p, **k)
 
 
-class VersionError(Exception):
-
-    """Exception which gets thrown if no valid PolicyKit version can be
-    determined."""
-
-
 class PolKit(object):
 
     """Wrapper for PolicyKit which hides some of the differences between
     different PolicyKit versions."""
 
     polkit_valid_versions = ["1", "0"]
-    __polkit_version = None
+    __polkit_version = -1
     __polkit_auth_interface = None
     __polkitd_interface = None
     __systembus = None
@@ -204,7 +198,7 @@ class PolKit(object):
             dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
             PolKit.__systembus = dbus.SystemBus()
 
-        if not PolKit.__polkit_version:
+        if PolKit.__polkit_version == -1:
             pk_ver_objnamepathif = {"0": ("org.freedesktop.PolicyKit",
                                     "/",
                                     "org.freedesktop.PolicyKit"),
@@ -239,23 +233,23 @@ class PolKit(object):
                         "org.freedesktop.PolicyKit.AuthenticationAgent")
                 PolKit.__polkitd_interface = pk_ver_if["0"]
             else:
-                raise VersionError("Cannot determine valid PolicyKit version.")
+                PolKit.__polkit_version = None
 
     @classmethod
     def polkit_version(cls):
-        if not PolKit.__polkit_version:
+        if PolKit.__polkit_version == -1:
             PolKit.__determine_polkit_version()
         return PolKit.__polkit_version
 
     @classmethod
     def _polkit_auth_interface(cls):
-        if not PolKit.__polkit_version:
+        if PolKit.__polkit_version == -1:
             PolKit.__determine_polkit_version()
         return PolKit.__polkit_auth_interface
 
     @classmethod
     def _polkitd_interface(cls):
-        if not PolKit.__polkit_version:
+        if PolKit.__polkit_version == -1:
             PolKit.__determine_polkit_version()
         return PolKit.__polkitd_interface
 
@@ -299,6 +293,17 @@ class PolKit(object):
 
         return is_authorized or is_challenge
 
+    def __dbus_system_bus_name_uid(self, system_bus_name):
+        bus = self._systembus
+        bus_object = bus.get_object('org.freedesktop.DBus',
+                '/org/freedesktop/DBus')
+        bus_interface = dbus.Interface(bus_object, 'org.freedesktop.DBus')
+        try:
+            uid = bus_interface.GetConnectionUnixUser(system_bus_name)
+        except:
+            uid = None
+        return uid
+
     def AreAuthorizationsObtainable(self, authorizations):
         if not self._polkitd_interface():
             return False
@@ -321,7 +326,10 @@ class PolKit(object):
 
             return obtainable
         else:
-            return False
+            if self.polkit_version() is None:
+                return True
+            else:
+                return False
 
     def IsSystemBusNameAuthorized(self, system_bus_name, action_id,
         challenge=True, details={}):
@@ -357,12 +365,17 @@ class PolKit(object):
         reply_handler, error_handler, challenge=True, details={}):
 
         pkv = self.polkit_version()
+        assert(pkv in self.polkit_valid_versions or pkv is None)
+
         if pkv == "1":
             self.IsSystemBusNameAuthorizedAsync_1(system_bus_name, action_id,
                     reply_handler=reply_handler, error_handler=error_handler,
                     details=details)
         elif pkv == "0":
             self.IsSystemBusNameAuthorizedAsync_0(system_bus_name, action_id,
+                    reply_handler=reply_handler, error_handler=error_handler)
+        elif pkv is None:
+            self.IsSystemBusNameAuthorized_None(system_bus_name, action_id,
                     reply_handler=reply_handler, error_handler=error_handler)
 
     def IsSystemBusNameAuthorizedAsync_0(self, system_bus_name, action_id,
@@ -397,6 +410,11 @@ class PolKit(object):
                                    reply_handler=reply_cb,
                                    error_handler=error_handler,
                                    timeout=method_call_no_timeout)
+
+    def IsSystemBusNameAuthorized_None(self, system_bus_name, action_id,
+            reply_handler, error_handler):
+        reply_handler(action_id is None or
+                self.__dbus_system_bus_name_uid(system_bus_name) == 0)
 
 
 __polkit = PolKit()

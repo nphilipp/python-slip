@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.2.23
+Version:    0.2.24
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -98,6 +98,9 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Mon Nov 12 2012 Nils Philippsen <nils@redhat.com> - 0.2.24-1
+- dbus.polkit: fall back to unix uids if polkit is not available
+
 * Fri Nov 09 2012 Nils Philippsen <nils@redhat.com> - 0.2.23-1
 - default to classic gobject if available
 - actually distribute gobject wrapper code

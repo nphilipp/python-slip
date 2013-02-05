@@ -45,7 +45,7 @@ from slip.dbus import polkit
 class DBusProxy(object):
 
     def __init__(self):
-        self.bus = dbus.SystemBus()
+        self.bus = dbus.SessionBus()
         self.dbus_object = \
             self.bus.get_object("org.fedoraproject.slip.example.mechanism",
                                 "/org/fedoraproject/slip/example/object")

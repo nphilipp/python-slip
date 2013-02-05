@@ -150,14 +150,31 @@ class PolKit(object):
 
     """Convenience wrapper around polkit."""
 
+    _dbus_name = 'org.freedesktop.PolicyKit1'
+    _dbus_path = '/org/freedesktop/PolicyKit1/Authority'
+    _dbus_interface = 'org.freedesktop.PolicyKit1.Authority'
+
     __interface = None
     __bus = None
     __bus_name = None
+    __signal_receiver = None
+
+    @classmethod
+    def _on_name_owner_changed(cls, name, old_owner, new_owner):
+        if name == cls._dbus_name and PolKit.__bus:
+            PolKit.__bus.remove_signal_receiver(PolKit.__signal_receiver)
+            PolKit.__bus = None
+            PolKit.__signal_receiver = None
+            PolKit.__interface = None
 
     @property
     def _bus(self):
         if not PolKit.__bus:
             PolKit.__bus = dbus.SystemBus()
+            PolKit.__signal_receiver = PolKit.__bus.add_signal_receiver(
+                    handler_function = self._on_name_owner_changed,
+                    signal_name='NameOwnerChanged',
+                    dbus_interface='org.freedesktop.DBus')
         return PolKit.__bus
 
     @property
@@ -170,9 +187,8 @@ class PolKit(object):
     def _interface(self):
         if not PolKit.__interface:
             PolKit.__interface = dbus.Interface(self._bus.get_object(
-                "org.freedesktop.PolicyKit1",
-                "/org/freedesktop/PolicyKit1/Authority"),
-                "org.freedesktop.PolicyKit1.Authority")
+                self._dbus_name, self._dbus_path),
+                self._dbus_interface)
         return PolKit.__interface
 
     @property

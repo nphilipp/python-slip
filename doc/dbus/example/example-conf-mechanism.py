@@ -76,7 +76,7 @@ And one more."""
 if __name__ == "__main__":
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
-    bus = dbus.SystemBus()
+    bus = dbus.SessionBus()
 
     name = dbus.service.BusName("org.fedoraproject.slip.example.mechanism",
                                 bus)

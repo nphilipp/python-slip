@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.3
+Version:    0.4.0
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -33,14 +33,11 @@ Requires:   dbus-python >= 0.80
 # Don't require any of pygobject2/3 because slip.dbus works with either one. In
 # theory users of slip.dbus should require one or the other anyway to use the
 # main loop.
-%if 0%{?fedora}%{?rhel} && 0%{?fedora} < 12 && 0%{?rhel} < 6
-Requires:   PolicyKit >= 0.8-3
-%else
+#
 # No hard requirement on polkit to allow minimal installs without polkit and
 # its dependencies.
 Conflicts:  PolicyKit < 0.8-3
 Requires:   python-decorator
-%endif
 
 %description dbus
 The Simple Library for Python packages contain miscellaneous code for
@@ -98,6 +95,28 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Fri Mar 08 2013 Nils Philippsen <nils@redhat.com> - 0.4.0-1
+- version 0.4.0:
+  - get rid of (ancient) PolicyKit-0.x support
+  - add basic (experimental, unstable) dbus introspection support
+  - learn to cope with polkitd being restarted
+
+* Mon Nov 12 2012 Nils Philippsen <nils@redhat.com> - 0.2.24-1
+- dbus.polkit: fall back to unix uids if polkit is not available
+
+* Fri Nov 09 2012 Nils Philippsen <nils@redhat.com> - 0.2.23-1
+- default to classic gobject if available
+- actually distribute gobject wrapper code
+
+* Fri Nov 09 2012 Nils Philippsen <nils@redhat.com> - 0.2.22-1
+- dbus: work with either gobject or gi.repository.GObject (pygobject2/3)
+
+* Mon Oct 22 2012 Nils Philippsen <nils@redhat.com> - 0.2.21-1
+- add slip.util.files.symlink_atomically()
+
+* Fri Nov 28 2011 Nils Philippsen <nils@redhat.com> - 0.2.20-1
+- revert "preserve signature, docstrings, etc. of decorated methods" (#757517)
+
 * Thu Nov 03 2011 Nils Philippsen <nils@redhat.com> - 0.2.19-1
 - allow service object methods to be called locally
 - preserve signature, docstrings, etc. of decorated methods

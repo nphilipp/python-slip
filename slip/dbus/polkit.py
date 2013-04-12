@@ -23,10 +23,12 @@
 """This module contains convenience decorators and functions for using
 PolicyKit with dbus services and clients."""
 
+from __future__ import absolute_import
+
 import dbus
 from decorator import decorator
 
-from constants import method_call_no_timeout
+from .constants import method_call_no_timeout
 
 __all__ = ["require_auth", "enable_proxy", "AUTHFAIL_DONTCATCH",
            "NotAuthorizedException", "AreAuthorizationsObtainable",

@@ -25,9 +25,11 @@
 """This module contains D-Bus proxy classes which implement the default
 timeout of the augmented bus classes in slip.dbus.bus."""
 
+from __future__ import absolute_import
+
 import dbus.proxies
 
-import constants
+from . import constants
 
 
 class _ProxyMethod(dbus.proxies._ProxyMethod):

@@ -20,6 +20,8 @@
 
 """This module contains helper functions for dealing with files."""
 
+from __future__ import absolute_import
+
 __all__ = ["issamefile", "linkfile", "copyfile", "linkorcopyfile",
            "overwrite_safely"]
 

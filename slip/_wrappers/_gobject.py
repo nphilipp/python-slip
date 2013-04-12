@@ -20,6 +20,8 @@
 """This module lets some other slip modules cooperate with either the gobject
 or the gi.repository.GObject modules."""
 
+from __future__ import absolute_import
+
 import sys
 
 __all__ = ['MainLoop', 'source_remove', 'timeout_add']

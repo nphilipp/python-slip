@@ -25,6 +25,8 @@
 
 Currently only glib main loops are supported."""
 
+from __future__ import absolute_import
+
 __all__ = ("MainLoop", "set_type")
 
 
@@ -92,7 +94,7 @@ class MainLoop(object):
 class GlibMainLoop(MainLoop):
 
     def __init__(self):
-        from slip._wrappers import _gobject
+        from .._wrappers import _gobject
         ml = _gobject.MainLoop()
         ctx = ml.get_context()
 

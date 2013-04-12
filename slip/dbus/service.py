@@ -22,12 +22,14 @@
 
 """This module contains convenience functions for using dbus-activated services."""
 
+from __future__ import absolute_import
+
 import dbus
 import dbus.service
 
-from slip._wrappers import _gobject as GObject
+from .._wrappers import _gobject as GObject
 
-import polkit
+from . import polkit
 
 __all__ = ["Object", "InterfaceType", "set_mainloop"]
 

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import tools
-from tools import label_set_autowrap
+from __future__ import absolute_import
+
+from . import tools
+from .tools import label_set_autowrap

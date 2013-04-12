@@ -24,9 +24,11 @@
 """This module contains functions which create monkey-patched/augmented D-Bus
 buses."""
 
+from __future__ import absolute_import
+
 import dbus
-import proxies
-import constants
+from . import proxies
+from . import constants
 
 for name in ("Bus", "SystemBus", "SessionBus", "StarterBus"):
     exec \

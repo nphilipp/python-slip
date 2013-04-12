@@ -22,6 +22,8 @@
 """This module contains the label_set_autowrap() function which makes labels
 re-wrap themselves automatically if their containers change in size."""
 
+from __future__ import absolute_import
+
 import gtk
 import pango
 

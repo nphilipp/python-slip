@@ -3,6 +3,8 @@
 
 """Classes and functions to easily access DBus introspection data."""
 
+from __future__ import absolute_import
+
 from xml.etree.ElementTree import ElementTree
 from StringIO import StringIO
 

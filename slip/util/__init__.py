@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import hookable
-import files
+from __future__ import absolute_import
+
+from . import hookable
+from . import files

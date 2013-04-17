@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.4.0
+Version:    0.5
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 

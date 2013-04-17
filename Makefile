@@ -4,6 +4,7 @@
 PKGNAME=python-slip
 
 SCM_REMOTEREPO_RE = ^ssh://(.*@)?git.fedorahosted.org/git/$(PKGNAME).git$
+SCM_REMOTE_BRANCH = 0.4.x
 UPLOAD_URL = ssh://fedorahosted.org/$(PKGNAME)
 
 PY_SOURCES = $(wildcard slip/*.py slip/dbus/*.py slip/gtk/*.py)

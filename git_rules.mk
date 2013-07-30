@@ -13,7 +13,7 @@ SCM_SNAP_TAG = git
 SCM_ACTUAL_REMOTE_BRANCH = $(notdir $(shell git config branch.$(SCM_LOCAL_BRANCH).merge))
 
 SCM_REMOTEREPO_NAME = $(shell git config branch.$(SCM_LOCAL_BRANCH).remote)
-SCM_REMOTEREPO_URL = $(shell git config remote.$(SCM_REMOTEREPO_NAME).url)
+SCM_REMOTEREPO_URL = $(shell git config remote.$(SCM_REMOTEREPO_NAME).pushurl || git config remote.$(SCM_REMOTEREPO_NAME).url)
 
 SCM_CHECK_INCOMING_CHANGES = [ -n "$$(git fetch >&/dev/null && git log ..$(SCM_REMOTEREPO_NAME)/$(SCM_REMOTE_BRANCH))" ]
 SCM_CHECK_MODS = [ -n "$$(git diff)" -o -n "$$(git diff -a)" ]

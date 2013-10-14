@@ -30,7 +30,7 @@ from . import proxies
 from . import constants
 
 for name in ("Bus", "SystemBus", "SessionBus", "StarterBus"):
-    exec \
+    exec(
         """def %(name)s(*args, **kwargs):
     busobj = dbus.%(name)s(*args, **kwargs)
     busobj.ProxyObjectClass = proxies.ProxyObject
@@ -38,4 +38,4 @@ for name in ("Bus", "SystemBus", "SessionBus", "StarterBus"):
     return busobj
 """ % {
         "name": name, "modname": __name__,
-        "default_timeout": constants.method_call_no_timeout}
+        "default_timeout": constants.method_call_no_timeout})

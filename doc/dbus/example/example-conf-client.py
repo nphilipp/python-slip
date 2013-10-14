@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import dbus
 
@@ -68,15 +68,15 @@ example_object = DBusProxy()
 
 config_data = example_object.read()
 
-print "read config_data successfully:"
-print config_data
-print
-print
+print("read config_data successfully:")
+print(config_data)
+print()
+print()
 
-print "attempting to write config data"
+print("attempting to write config data")
 
 example_object.write(config_data + """
 
 And a second more.""")
 
-print "successfully wrote config data"
+print("successfully wrote config data")

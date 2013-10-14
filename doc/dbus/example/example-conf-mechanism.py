@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import gobject
 
@@ -55,23 +55,23 @@ class ExampleObject(slip.dbus.service.Object):
 They extend over some lines.
 
 And one more."""
-        print "service object constructed"
+        print("service object constructed")
 
     def __del__(self):
-        print "service object deleted"
+        print("service object deleted")
 
     @slip.dbus.polkit.require_auth("org.fedoraproject.slip.example.read")
     @dbus.service.method("org.fedoraproject.slip.example.mechanism",
                          in_signature="", out_signature="s")
     def read(self):
-        print "%s.read () -> '%s'" % (self, self.config_data)
+        print("%s.read () -> '%s'" % (self, self.config_data))
         return self.config_data
 
     @slip.dbus.polkit.require_auth("org.fedoraproject.slip.example.write")
     @dbus.service.method("org.fedoraproject.slip.example.mechanism",
                          in_signature="s", out_signature="")
     def write(self, config_data):
-        print "%s.write ('%s')" % (self, config_data)
+        print("%s.write ('%s')" % (self, config_data))
         self.config_data = config_data
 
 
@@ -86,5 +86,5 @@ if __name__ == "__main__":
 
     mainloop = gobject.MainLoop()
     slip.dbus.service.set_mainloop(mainloop)
-    print "Running example service."
+    print("Running example service.")
     mainloop.run()

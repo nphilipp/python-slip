@@ -124,7 +124,7 @@ def wrap_method(method):
                         error = None
                         try:
                             result = method(self, *p, **k)
-                        except Exception, e:
+                        except Exception as e:
                             error = e
 
                         # ... and call the reply or error callback

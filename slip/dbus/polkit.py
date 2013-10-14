@@ -115,7 +115,7 @@ def enable_proxy(
 
         try:
             return func(*p, **k)
-        except dbus.DBusException, e:
+        except dbus.DBusException as e:
             exc_name = e.get_dbus_name()
 
             if not exc_name.startswith(AUTH_EXC_PREFIX):

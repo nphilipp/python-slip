@@ -72,7 +72,7 @@ def linkfile(srcpath, dstpath):
         _dsttmp = tempfile.mktemp(prefix=dstbname + os.extsep, dir=dstdname)
         try:
             os.link(srcpath, _dsttmp)
-        except OSError, e:
+        except OSError as e:
             if e.errno == errno.EEXIST:
 
                 # try another name
@@ -151,7 +151,7 @@ def linkorcopyfile(
     try:
         linkfile(srcpath, dstpath)
         return
-    except OSError, e:
+    except OSError as e:
         if e.errno not in (errno.EMLINK, errno.EPERM, errno.EXDEV):
 
             # don't bother copying
@@ -183,7 +183,7 @@ def symlink_atomically(srcpath, dstpath, force=False, preserve_context=True):
             ret, ctx = selinux.lgetfilecon(dstpath)
             if ret < 0:
                 raise RuntimeError("getfilecon(%r) failed" % dstpath)
-        except OSError, e:
+        except OSError as e:
             if e.errno == errno.ENOENT:
                 run_restorecon = True
             else:
@@ -200,7 +200,7 @@ def symlink_atomically(srcpath, dstpath, force=False, preserve_context=True):
                 prefix=dstbname + os.extsep, dir=dstdname)
             try:
                 os.symlink(srcpath, _dsttmp)
-            except OSError, e:
+            except OSError as e:
                 if e.errno == errno.EEXIST:
                     # try again
                     continue

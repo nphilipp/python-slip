@@ -238,8 +238,8 @@ class PolKit(object):
         if not self._polkit_present:
             return True
 
-        if isinstance(authorizations, basestring):
-            authorizations = [authorizations]
+        if not isinstance(authorizations, (tuple, list, set)):
+            authorizations = (authorizations,)
 
         obtainable = \
             reduce(

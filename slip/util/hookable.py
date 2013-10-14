@@ -23,6 +23,8 @@
 """This module contains variants of certain base types which call registered
 hooks on changes."""
 
+import collections
+
 __all__ = ["Hookable", "HookableSet"]
 
 
@@ -173,7 +175,7 @@ class Hookable(object):
         self.__add_hook(hook, self, *args, **kwargs)
 
     def __add_hook(self, hook, _hookable, *args, **kwargs):
-        assert callable(hook)
+        assert isinstance(hook, collections.Callable)
         assert isinstance(_hookable, Hookable)
         hookentry = _HookEntry(hook, args, kwargs, hookable=_hookable)
         self.__hooks__.add(hookentry)

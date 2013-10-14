@@ -28,15 +28,15 @@ class HookableType(type):
 
     def __new__(cls, name, bases, dct):
 
-        if dct.has_key("_hookable_change_methods"):
+        if '_hookable_change_methods' in dct:
             try:
                 base = dct["_hookable_base_class"]
             except KeyError:
                 base = None
                 for base_candidate in filter(lambda x: x != Hookable, bases):
                     if base:
-                        raise TypeError("too many base classes: %s" %
-                                 str(bases))
+                        raise TypeError(
+                            "too many base classes: %s" % str(bases))
                     else:
                         base = base_candidate
 
@@ -67,12 +67,16 @@ class _HookEntry(object):
         self.__kwargs = kwargs
 
     def __cmp__(self, obj):
-        return self.__hook == obj.__hook and self.__args == obj.__args and \
-             self.__kwargs == obj.__kwargs
+        return (
+            self.__hook == obj.__hook and
+            self.__args == obj.__args and
+            self.__kwargs == obj.__kwargs)
 
     def __hash__(self):
-        return self.__hook.__hash__() ^ self.__args.__hash__() ^ \
-             self.__kwargs.iteritems().__hash__()
+        return (
+            self.__hook.__hash__() ^
+            self.__args.__hash__() ^
+            self.__kwargs.iteritems().__hash__())
 
     def run(self):
         self.__hook(*self.__args, **self.__kwargs)
@@ -149,13 +153,11 @@ class HookableSet(set, Hookable):
 
     """A set object which calls registered hooks on changes."""
 
-    _hookable_change_methods = ("add", "clear", "difference_update",
-        "discard", "intersection_update", "pop", "remove",
-        "symmetric_difference_update", "update")
+    _hookable_change_methods = (
+        "add", "clear", "difference_update", "discard", "intersection_update",
+        "pop", "remove", "symmetric_difference_update", "update")
 
     def copy(self):
         obj = set.copy(self)
         obj.__real_hooks__ = set()
         return obj
-
-

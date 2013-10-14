@@ -55,5 +55,3 @@ class _ProxyMethod(dbus.proxies._ProxyMethod):
 class ProxyObject(dbus.proxies.ProxyObject):
 
     ProxyMethodClass = _ProxyMethod
-
-

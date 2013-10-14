@@ -44,8 +44,8 @@ class MainLoop(object):
         global _mainloop_class
         if MainLoop._mainloop_class is None:
             MainLoop.set_type("glib")
-        return super(MainLoop, cls).__new__(MainLoop.__mainloop_class,
-                *args, **kwargs)
+        return super(MainLoop, cls).__new__(
+            MainLoop.__mainloop_class, *args, **kwargs)
 
     @classmethod
     def set_type(cls, mltype):
@@ -61,8 +61,9 @@ class MainLoop(object):
         if mltype in ml_type_class:
             MainLoop.__mainloop_class = ml_type_class[mltype]
         else:
-            raise ValueError("'%s' is not one of the valid main loop types (%s)." %
-                              (mltype, ",".join(ml_type_class.keys())))
+            raise ValueError(
+                "'%s' is not one of the valid main loop types (%s)." %
+                (mltype, ",".join(ml_type_class.keys())))
 
     def pending(self):
         """Returns if there are pending events."""

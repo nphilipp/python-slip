@@ -8,6 +8,7 @@ from __future__ import absolute_import
 from xml.etree.ElementTree import ElementTree
 from StringIO import StringIO
 
+
 class IElemMeta(type):
     """Metaclass for introspection elements.
 
@@ -33,15 +34,17 @@ class IElemMeta(type):
 
         if 'elemname' not in dct:
             if not name.startswith("IElem"):
-                raise TypeError("Class '%s' needs to set elemname (or be "
-                        "called 'IElem...'))" % name)
+                raise TypeError(
+                    "Class '%s' needs to set elemname (or be called "
+                    "'IElem...'))" % name)
             dct['elemname'] = IElemMeta.clsname_to_elemname(name[5:])
 
         elemname = dct['elemname']
 
         if elemname in IElemMeta.elemnames_to_classes:
-            raise TypeError("Class '%s' tries to register duplicate elemname "
-                    "'%s'" % (name, elemname))
+            raise TypeError(
+                "Class '%s' tries to register duplicate elemname '%s'" %
+                (name, elemname))
 
         kls = type.__new__(cls, name, bases, dct)
 
@@ -56,21 +59,21 @@ class IElem(object):
     __metaclass__ = IElemMeta
 
     def __new__(cls, elem, parent=None):
-        kls = IElemMeta.elemnames_to_classes.get(elem.tag,
-                IElemMeta.elemnames_to_classes[None])
+        kls = IElemMeta.elemnames_to_classes.get(
+            elem.tag, IElemMeta.elemnames_to_classes[None])
         return super(IElem, cls).__new__(kls, elem, parent)
 
     def __init__(self, elem, parent=None):
         self.elem = elem
         self.parent = parent
-        self.child_elements = [ IElem(c, parent=self) for c in elem ]
+        self.child_elements = [IElem(c, parent=self) for c in elem]
 
     def __str__(self):
         s = "%s %r" % (self.elemname if self.elemname else "unknown:%s" %
-                self.elem.tag, self.attrib)
+            self.elem.tag, self.attrib)
         for c in self.child_elements:
             for cc in str(c).split("\n"):
-                s+="\n  %s" % (cc)
+                s += "\n  %s" % (cc)
         return s
 
     @property
@@ -98,7 +101,8 @@ class IElemNode(IElem, IElemNameMixin):
     def __init__(self, elem, parent=None):
         super(IElemNode, self).__init__(elem, parent)
 
-        self.child_nodes = [ c for c in self.child_elements if isinstance(c, IElemNode) ]
+        self.child_nodes = [
+            c for c in self.child_elements if isinstance(c, IElemNode)]
 
 
 class IElemInterface(IElem):

@@ -20,7 +20,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-"""This module contains convenience functions for using dbus-activated services."""
+"This module contains convenience functions for using dbus-activated services."
 
 from __future__ import absolute_import
 
@@ -146,8 +146,9 @@ def wrap_method(method):
                 error_cb(error)
                 self.timeout_restart()
 
-            polkit.IsSystemBusNameAuthorizedAsync(sender, action_id,
-                    reply_handler=reply_handler, error_handler=error_handler)
+            polkit.IsSystemBusNameAuthorizedAsync(
+                sender, action_id,
+                reply_handler=reply_handler, error_handler=error_handler)
         else:
             # no action id, or run locally, no need to do anything fancy
             retval = method(self, *p, **k)
@@ -197,11 +198,11 @@ class Object(dbus.service.Object):
 
     default_polkit_auth_required = None
 
-    def __init__(self, conn=None, object_path=None, bus_name=None,
-        persistent=None):
+    def __init__(
+        self, conn=None, object_path=None, bus_name=None, persistent=None):
 
         super(Object, self).__init__(conn, object_path, bus_name)
-        if persistent == None:
+        if persistent is None:
             self.persistent = self.__class__.persistent
         else:
             self.persistent = persistent
@@ -230,7 +231,7 @@ class Object(dbus.service.Object):
                 del Object.connections_smobjs[conn]
 
             if not self.persistent and len(Object.senders) == 0 and \
-                    Object.current_source == None:
+                    Object.current_source is None:
                 quit_cb()
 
     def timeout_restart(self, duration=None):
@@ -256,5 +257,3 @@ class Object(dbus.service.Object):
                         signal_name="NameOwnerChanged",
                         dbus_interface="org.freedesktop.DBus")
             Object.connections_senders[self.connection].add(sender)
-
-

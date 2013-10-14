@@ -34,6 +34,7 @@ __all__ = ["require_auth", "enable_proxy", "AUTHFAIL_DONTCATCH",
            "NotAuthorizedException", "AreAuthorizationsObtainable",
            "IsSystemBusNameAuthorizedAsync"]
 
+
 def require_auth(polkit_auth):
     """Decorator for DBus service methods.
 
@@ -49,12 +50,18 @@ def require_auth(polkit_auth):
     return require_auth_decorator
 
 
-AUTH_EXC_PREFIX = "org.fedoraproject.slip.dbus.service.PolKit.NotAuthorizedException."
+AUTH_EXC_PREFIX = \
+    "org.fedoraproject.slip.dbus.service.PolKit.NotAuthorizedException."
+
 
 class AUTHFAIL_DONTCATCH(object):
     pass
 
-def enable_proxy(func=None, authfail_result=AUTHFAIL_DONTCATCH, authfail_exception=None, authfail_callback=None):
+
+def enable_proxy(
+    func=None, authfail_result=AUTHFAIL_DONTCATCH, authfail_exception=None,
+    authfail_callback=None):
+
     """Decorator for DBus proxy methods.
 
     Let's you (optionally) specify either a result value or an exception type
@@ -95,9 +102,13 @@ def enable_proxy(func=None, authfail_result=AUTHFAIL_DONTCATCH, authfail_excepti
 
     assert(func is None or callable(func))
 
-    assert(authfail_result in (None, AUTHFAIL_DONTCATCH) or authfail_exception is None)
+    assert(
+        authfail_result in (None, AUTHFAIL_DONTCATCH) or
+        authfail_exception is None)
     assert(authfail_callback is None or callable(authfail_callback))
-    assert(authfail_exception is None or issubclass(authfail_exception, Exception))
+    assert(
+        authfail_exception is None or
+        issubclass(authfail_exception, Exception))
 
     def _enable_proxy(func, *p, **k):
 
@@ -133,6 +144,7 @@ def enable_proxy(func=None, authfail_result=AUTHFAIL_DONTCATCH, authfail_excepti
             return decorator(_enable_proxy, func)
         return decorate
 
+
 class NotAuthorizedException(dbus.DBusException):
 
     """Exception which a DBus service method throws if an authorization
@@ -143,8 +155,8 @@ class NotAuthorizedException(dbus.DBusException):
 
     def __init__(self, action_id, *p, **k):
 
-        self._dbus_error_name = self.__class__._dbus_error_name + "."\
-             + action_id
+        self._dbus_error_name = self.__class__._dbus_error_name + "." +\
+            action_id
         super(NotAuthorizedException, self).__init__(*p, **k)
 
 
@@ -174,9 +186,9 @@ class PolKit(object):
         if not PolKit.__bus:
             PolKit.__bus = dbus.SystemBus()
             PolKit.__signal_receiver = PolKit.__bus.add_signal_receiver(
-                    handler_function = self._on_name_owner_changed,
-                    signal_name='NameOwnerChanged',
-                    dbus_interface='org.freedesktop.DBus')
+                handler_function=self._on_name_owner_changed,
+                signal_name='NameOwnerChanged',
+                dbus_interface='org.freedesktop.DBus')
         return PolKit.__bus
 
     @property
@@ -201,8 +213,8 @@ class PolKit(object):
             return False
 
     def __dbus_system_bus_name_uid(self, system_bus_name):
-        bus_object = self._bus.get_object('org.freedesktop.DBus',
-                '/org/freedesktop/DBus')
+        bus_object = self._bus.get_object(
+            'org.freedesktop.DBus', '/org/freedesktop/DBus')
         bus_interface = dbus.Interface(bus_object, 'org.freedesktop.DBus')
         try:
             uid = bus_interface.GetConnectionUnixUser(system_bus_name)
@@ -216,8 +228,8 @@ class PolKit(object):
 
         (is_authorized, is_challenge, details) = \
             self._interface.CheckAuthorization(
-                    ("system-bus-name", {"name": self._bus_name}),
-                    authorization, {}, 0, "")
+                ("system-bus-name", {"name": self._bus_name}),
+                authorization, {}, 0, "")
 
         return is_authorized or is_challenge
 
@@ -229,18 +241,20 @@ class PolKit(object):
             authorizations = [authorizations]
 
         obtainable = \
-            reduce(lambda x, y: x and self.__authorization_is_obtainable(y),
-                   authorizations, True)
+            reduce(
+                lambda x, y: x and self.__authorization_is_obtainable(y),
+                authorizations, True)
 
         return obtainable
 
-    def IsSystemBusNameAuthorizedAsync(self, system_bus_name, action_id,
-        reply_handler, error_handler,
+    def IsSystemBusNameAuthorizedAsync(
+        self, system_bus_name, action_id, reply_handler, error_handler,
         challenge=True, details={}):
 
         if not self._polkit_present:
-            reply_handler(action_id is None or
-                    self.__dbus_system_bus_name_uid(system_bus_name) == 0)
+            reply_handler(
+                action_id is None or
+                self.__dbus_system_bus_name_uid(system_bus_name) == 0)
 
         flags = 0
         if challenge:
@@ -250,11 +264,10 @@ class PolKit(object):
             (is_authorized, is_challenge, details) = args
             reply_handler(is_authorized)
 
-        self._interface.CheckAuthorization(("system-bus-name",
-            {"name": system_bus_name}),
+        self._interface.CheckAuthorization(
+            ("system-bus-name", {"name": system_bus_name}),
             action_id, details, flags, "",
-            reply_handler=reply_cb,
-            error_handler=error_handler,
+            reply_handler=reply_cb, error_handler=error_handler,
             timeout=method_call_no_timeout)
 
 
@@ -265,8 +278,10 @@ def AreAuthorizationsObtainable(authorizations):
     return __polkit.AreAuthorizationsObtainable(authorizations)
 
 
-def IsSystemBusNameAuthorizedAsync(system_bus_name, action_id,
-    reply_handler, error_handler, challenge=True, details={}):
+def IsSystemBusNameAuthorizedAsync(
+    system_bus_name, action_id, reply_handler, error_handler, challenge=True,
+    details={}):
 
-    return __polkit.IsSystemBusNameAuthorizedAsync(system_bus_name, action_id,
-        reply_handler, error_handler, challenge, details)
+    return __polkit.IsSystemBusNameAuthorizedAsync(
+        system_bus_name, action_id, reply_handler, error_handler, challenge,
+        details)

@@ -44,7 +44,7 @@ def _issamefile(path1, path2):
 def issamefile(path1, path2, catch_stat_exceptions=[]):
     """Check whether two paths point to the same file (i.e. are hardlinked)."""
 
-    if catch_stat_exceptions == True:
+    if catch_stat_exceptions is True:
         catch_stat_exceptions = Exception
 
     try:
@@ -100,8 +100,8 @@ def copyfile(srcpath, dstpath, copy_mode_from_dst=True, run_restorecon=True):
     dstbname = os.path.basename(dstpath)
 
     srcfile = open(srcpath, "rb")
-    dsttmpfile = tempfile.NamedTemporaryFile(prefix=dstbname + os.path.extsep,
-            dir=dstdname, delete=False)
+    dsttmpfile = tempfile.NamedTemporaryFile(
+        prefix=dstbname + os.path.extsep, dir=dstdname, delete=False)
 
     mode_copied = False
 
@@ -140,8 +140,9 @@ def copyfile(srcpath, dstpath, copy_mode_from_dst=True, run_restorecon=True):
         selinux.restorecon(dstpath)
 
 
-def linkorcopyfile(srcpath, dstpath, copy_mode_from_dst=True,
-    run_restorecon=True):
+def linkorcopyfile(
+    srcpath, dstpath, copy_mode_from_dst=True, run_restorecon=True):
+
     """First attempt to hardlink srcpath to dstpath, if hardlinking isn't
     possible, attempt copying srcpath to dstpath."""
 
@@ -161,6 +162,7 @@ def linkorcopyfile(srcpath, dstpath, copy_mode_from_dst=True,
             pass
 
     copyfile(srcpath, dstpath, copy_mode_from_dst, run_restorecon)
+
 
 def symlink_atomically(srcpath, dstpath, force=False, preserve_context=True):
     """Create a symlink, optionally replacing dstpath atomically, optionally
@@ -192,7 +194,8 @@ def symlink_atomically(srcpath, dstpath, force=False, preserve_context=True):
     else:
         dsttmp = None
         for attempt in xrange(tempfile.TMP_MAX):
-            _dsttmp = tempfile.mktemp(prefix=dstbname + os.extsep, dir=dstdname)
+            _dsttmp = tempfile.mktemp(
+                prefix=dstbname + os.extsep, dir=dstdname)
             try:
                 os.symlink(srcpath, _dsttmp)
             except OSError, e:
@@ -205,8 +208,9 @@ def symlink_atomically(srcpath, dstpath, force=False, preserve_context=True):
                 break
 
         if dsttmp is None:
-            raise IOError(errno.EEXIST,
-                    "No suitable temporary symlink could be created.")
+            raise IOError(
+                errno.EEXIST,
+                "No suitable temporary symlink could be created.")
 
         if preserve_context and not run_restorecon:
             selinux.lsetfilecon(dsttmp, ctx)
@@ -220,6 +224,7 @@ def symlink_atomically(srcpath, dstpath, force=False, preserve_context=True):
 
         if run_restorecon:
             selinux.restorecon(dstpath)
+
 
 def overwrite_safely(path, content, preserve_mode=True, preserve_context=True):
     """Safely overwrite a file by creating a temporary file in the same

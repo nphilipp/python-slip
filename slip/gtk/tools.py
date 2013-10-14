@@ -61,5 +61,3 @@ def __label_size_allocate(widget, allocation):
 
     if lh_old != lh:
         widget.set_size_request(-1, lh / pango.SCALE)
-
-

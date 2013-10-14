@@ -48,23 +48,23 @@ class DBusProxy(object):
 
     def __init__(self):
         self.bus = dbus.SessionBus()
-        self.dbus_object = \
-            self.bus.get_object("org.fedoraproject.slip.example.mechanism",
-                                "/org/fedoraproject/slip/example/object")
+        self.dbus_object = self.bus.get_object(
+            "org.fedoraproject.slip.example.mechanism",
+            "/org/fedoraproject/slip/example/object")
 
     @polkit.enable_proxy
     def read(self):
-        return self.dbus_object.read(dbus_interface="org.fedoraproject.slip.example.mechanism")
+        return self.dbus_object.read(
+            dbus_interface="org.fedoraproject.slip.example.mechanism")
 
     @polkit.enable_proxy
     def write(self, config_data):
-        return self.dbus_object.write(config_data,
-                                      dbus_interface="org.fedoraproject.slip.example.mechanism")
+        return self.dbus_object.write(
+            config_data,
+            dbus_interface="org.fedoraproject.slip.example.mechanism")
 
 
 example_object = DBusProxy()
-
-# "org.fedoraproject.slip.example.mechanism", "/org/fedoraproject/slip/example/object")
 
 config_data = example_object.read()
 

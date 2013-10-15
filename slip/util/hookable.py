@@ -64,9 +64,32 @@ class _HookEntry(object):
 
     def __init__(self, hook, args, kwargs):
 
+        assert(isinstance(hook, collections.Callable))
+
+        for n, x in enumerate(args):
+            try:
+                hash(x)
+            except TypeError:
+                raise TypeError(
+                        "Positional argument %d is not hashable: %r" %
+                        (n, x))
+
+        for k, x in kwargs.items():
+            try:
+                hash(x)
+            except TypeError:
+                raise TypeError(
+                        "Keyword argument %r is not hashable: %r" %
+                        (k, x))
+
+        if not isinstance(args, tuple):
+            args = tuple(args)
+
         self.__hook = hook
         self.__args = args
         self.__kwargs = kwargs
+
+        self.__hash = None
 
     def __cmp__(self, obj):
         return (
@@ -75,10 +98,16 @@ class _HookEntry(object):
             self.__kwargs == obj.__kwargs)
 
     def __hash__(self):
-        return (
-            self.__hook.__hash__() ^
-            self.__args.__hash__() ^
-            self.__kwargs.iteritems().__hash__())
+        if not self.__hash:
+            self.__hash = self._compute_hash()
+        return self.__hash
+
+    def _compute_hash(self):
+        hashvalue = hash(self.__hook)
+        hashvalue = hash(hashvalue) ^ hash(self.__args)
+        hashvalue = hash(hashvalue) ^ hash(
+                tuple(sorted(self.__kwargs.items())))
+        return hashvalue
 
     def run(self):
         self.__hook(*self.__args, **self.__kwargs)

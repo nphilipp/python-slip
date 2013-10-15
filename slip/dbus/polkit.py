@@ -29,6 +29,7 @@ from __future__ import absolute_import
 import collections
 import dbus
 from decorator import decorator
+from functools import reduce
 
 from .constants import method_call_no_timeout
 

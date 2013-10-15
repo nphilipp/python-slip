@@ -58,7 +58,7 @@ class HookableType(type):
             self._run_hooks()
             return retval
 
-        methodwrapper.func_name = methodname
+        methodwrapper.__name__ = methodname
         return methodwrapper
 
 

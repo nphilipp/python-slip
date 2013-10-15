@@ -166,7 +166,7 @@ def wrap_method(method):
 
         # delattr (method, attr)
 
-    wrapped_method.func_name = method.func_name
+    wrapped_method.__name__ = method.__name__
 
     return wrapped_method
 

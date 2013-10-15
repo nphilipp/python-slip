@@ -156,7 +156,7 @@ def wrap_method(method):
             self.timeout_restart()
             return retval
 
-    for attr in filter(lambda x: x[:6] == "_dbus_", dir(method)):
+    for attr in (x for x in dir(method) if x[:6] == "_dbus_"):
         if attr == "_dbus_sender_keyword":
             wrapped_method._dbus_sender_keyword = sender_keyword
         elif attr == "_dbus_async_callbacks":

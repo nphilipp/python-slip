@@ -37,7 +37,7 @@ class HookableType(type):
                 base = dct["_hookable_base_class"]
             except KeyError:
                 base = None
-                for base_candidate in filter(lambda x: x != Hookable, bases):
+                for base_candidate in (x for x in bases if x != Hookable):
                     if base:
                         raise TypeError(
                             "too many base classes: %s" % str(bases))

@@ -27,6 +27,7 @@ from __future__ import absolute_import
 
 import dbus
 import dbus.service
+from six import with_metaclass
 
 from .._wrappers import _gobject as GObject
 
@@ -181,9 +182,7 @@ class InterfaceType(dbus.service.InterfaceType):
         return super(InterfaceType, cls).__new__(cls, name, bases, dct)
 
 
-class Object(dbus.service.Object):
-
-    __metaclass__ = InterfaceType
+class Object(with_metaclass(InterfaceType, dbus.service.Object)):
 
     # timeout & persistence
 

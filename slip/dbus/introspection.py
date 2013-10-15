@@ -26,6 +26,7 @@ from __future__ import absolute_import
 
 from xml.etree.ElementTree import ElementTree
 from io import StringIO
+from six import with_metaclass
 
 
 class IElemMeta(type):
@@ -72,10 +73,8 @@ class IElemMeta(type):
         return kls
 
 
-class IElem(object):
+class IElem(with_metaclass(IElemMeta, object)):
     """Base class for introspection elements."""
-
-    __metaclass__ = IElemMeta
 
     def __new__(cls, elem, parent=None):
         kls = IElemMeta.elemnames_to_classes.get(

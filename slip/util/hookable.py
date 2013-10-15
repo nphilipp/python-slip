@@ -24,6 +24,7 @@
 hooks on changes."""
 
 import collections
+from six import with_metaclass
 
 __all__ = ["Hookable", "HookableSet"]
 
@@ -120,11 +121,9 @@ class _HookEntry(object):
             self.__hook(*self.__args, **self.__kwargs)
 
 
-class Hookable(object):
+class Hookable(with_metaclass(HookableType, object)):
 
     """An object which calls registered hooks on changes."""
-
-    __metaclass__ = HookableType
 
     @property
     def __hooks__(self, *p, **k):

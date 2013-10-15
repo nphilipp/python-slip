@@ -14,6 +14,7 @@ BuildRequires:  python
 BuildRequires:  python-devel
 
 Requires: libselinux-python
+Requires: python-six
 
 %description
 The Simple Library for Python packages contain miscellaneous code for
@@ -34,6 +35,7 @@ Requires:   dbus-python >= 0.80
 # its dependencies.
 Conflicts:  PolicyKit < 0.8-3
 Requires:   python-decorator
+Requires:   python-six
 
 %description dbus
 The Simple Library for Python packages contain miscellaneous code for

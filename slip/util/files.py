@@ -24,6 +24,10 @@
 
 from __future__ import absolute_import
 
+# ensure range() returns a generator
+if 'xrange' in dir(__builtins__):
+    range = xrange
+
 __all__ = ["issamefile", "linkfile", "copyfile", "linkorcopyfile",
            "overwrite_safely"]
 
@@ -68,7 +72,7 @@ def linkfile(srcpath, dstpath):
     dstbname = os.path.basename(dstpath)
 
     hardlinked = False
-    for attempt in xrange(tempfile.TMP_MAX):
+    for attempt in range(tempfile.TMP_MAX):
         _dsttmp = tempfile.mktemp(prefix=dstbname + os.extsep, dir=dstdname)
         try:
             os.link(srcpath, _dsttmp)
@@ -195,7 +199,7 @@ def symlink_atomically(srcpath, dstpath, force=False, preserve_context=True):
             selinux.restorecon(dstpath)
     else:
         dsttmp = None
-        for attempt in xrange(tempfile.TMP_MAX):
+        for attempt in range(tempfile.TMP_MAX):
             _dsttmp = tempfile.mktemp(
                 prefix=dstbname + os.extsep, dir=dstdname)
             try:

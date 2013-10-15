@@ -26,6 +26,10 @@ re-wrap themselves automatically if their containers change in size."""
 
 from __future__ import absolute_import
 
+# ensure range() returns a generator
+if 'xrange' in dir(__builtins__):
+    range = xrange
+
 import gtk
 import pango
 
@@ -38,7 +42,7 @@ def label_set_autowrap(widget):
 
     if isinstance(widget, gtk.Container):
         children = widget.get_children()
-        for i in xrange(len(children)):
+        for i in range(len(children)):
             label_set_autowrap(children[i])
     elif isinstance(widget, gtk.Label) and widget.get_line_wrap():
         widget.connect_after("size-allocate", __label_size_allocate)

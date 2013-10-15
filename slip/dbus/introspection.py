@@ -25,7 +25,7 @@
 from __future__ import absolute_import
 
 from xml.etree.ElementTree import ElementTree
-from StringIO import StringIO
+from io import StringIO
 
 
 class IElemMeta(type):

@@ -62,9 +62,10 @@ class HookableType(type):
 
 class _HookEntry(object):
 
-    def __init__(self, hook, args, kwargs):
+    def __init__(self, hook, args, kwargs, hookable=None):
 
         assert(isinstance(hook, collections.Callable))
+        assert(isinstance(hookable, Hookable))
 
         for n, x in enumerate(args):
             try:
@@ -88,6 +89,7 @@ class _HookEntry(object):
         self.__hook = hook
         self.__args = args
         self.__kwargs = kwargs
+        self.__hookable = hookable
 
         self.__hash = None
 
@@ -110,7 +112,10 @@ class _HookEntry(object):
         return hashvalue
 
     def run(self):
-        self.__hook(*self.__args, **self.__kwargs)
+        if self.__hookable:
+            self.__hook(self.__hookable, *self.__args, **self.__kwargs)
+        else:
+            self.__hook(*self.__args, **self.__kwargs)
 
 
 class Hookable(object):
@@ -162,9 +167,15 @@ class Hookable(object):
         self.hooks_frozen = False
 
     def add_hook(self, hook, *args, **kwargs):
+        self.__add_hook(hook, None, *args, **kwargs)
 
+    def add_hook_hookable(self, hook, *args, **kwargs):
+        self.__add_hook(hook, self, *args, **kwargs)
+
+    def __add_hook(self, hook, _hookable, *args, **kwargs):
         assert callable(hook)
-        hookentry = _HookEntry(hook, args, kwargs)
+        assert isinstance(_hookable, Hookable)
+        hookentry = _HookEntry(hook, args, kwargs, hookable=_hookable)
         self.__hooks__.add(hookentry)
 
     def remove_hook(self, hook, *args, **kwargs):

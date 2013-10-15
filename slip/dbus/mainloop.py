@@ -61,8 +61,8 @@ class MainLoop(object):
             MainLoop.__mainloop_class = ml_type_class[mltype]
         else:
             raise ValueError(
-                "'%s' is not one of the valid main loop types (%s)." %
-                (mltype, ",".join(ml_type_class.keys())))
+                "'%s' is not one of the valid main loop types:\n%s" %
+                (mltype, ", ".join(ml_type_class)))
 
     def pending(self):
         """Returns if there are pending events."""

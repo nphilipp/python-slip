@@ -175,7 +175,7 @@ class InterfaceType(dbus.service.InterfaceType):
 
     def __new__(cls, name, bases, dct):
 
-        for (attrname, attr) in dct.iteritems():
+        for (attrname, attr) in dct.items():
             if getattr(attr, "_dbus_is_method", False):
                 dct[attrname] = wrap_method(attr)
         return super(InterfaceType, cls).__new__(cls, name, bases, dct)
@@ -250,7 +250,7 @@ class Object(dbus.service.Object):
     def sender_seen(self, sender):
         if (sender, self.connection) not in Object.senders:
             Object.senders.add((sender, self.connection))
-            if self.connection not in Object.connections_senders.keys():
+            if self.connection not in Object.connections_senders:
                 Object.connections_senders[self.connection] = set()
                 Object.connections_smobjs[self.connection] = \
                     self.connection.add_signal_receiver(

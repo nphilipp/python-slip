@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# slip.gtk.tools -- utility functions for gtk
 #
 # Copyright © 2004, 2007 Red Hat, Inc.
-# Authors:
-# Thomas Woerner <twoerner@redhat.com>
-# Florian Festi <ffesti@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +16,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Authors:
+# Thomas Woerner <twoerner@redhat.com>
+# Florian Festi <ffesti@redhat.com>
 
 """This module contains the label_set_autowrap() function which makes labels
 re-wrap themselves automatically if their containers change in size."""

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+
+# slip._wrappers._gobject -- abstract (some) differences between gobject and
+# gi.repository.GObject
 #
 # Copyright © 2012 Red Hat, Inc.
-# Authors:
-# Nils Philippsen <nils@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +17,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Authors:
+# Nils Philippsen <nils@redhat.com>
 
 """This module lets some other slip modules cooperate with either the gobject
 or the gi.repository.GObject modules."""

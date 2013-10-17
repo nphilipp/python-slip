@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
+# slip.util.files -- file helper functions
 #
 # Copyright © 2009, 2010, 2012 Red Hat, Inc.
-# Authors:
-# Nils Philippsen <nils@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +16,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Authors:
+# Nils Philippsen <nils@redhat.com>
 
 """This module contains helper functions for dealing with files."""
 

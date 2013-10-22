@@ -25,6 +25,10 @@ ifndef PY_TOPDIR
 	PY_TOPDIR = $(abspath $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 endif
 
+ifndef PYTHON
+	PYTHON = python
+endif
+
 _SETUP_PY = $(PY_TOPDIR)/$(SETUP_PY)
 
 $(_SETUP_PY):	$(_SETUP_PY).in $(PKGNAME).spec
@@ -33,15 +37,15 @@ $(_SETUP_PY):	$(_SETUP_PY).in $(PKGNAME).spec
 
 py-build-ext:	$(_SETUP_PY) $(PY_SOURCES)
 	cd $(PY_TOPDIR); \
-	python $(SETUP_PY) build_ext -i
+	$(PYTHON) $(SETUP_PY) build_ext -i
 
 py-build:   $(_SETUP_PY) $(PY_SOURCES)
 	cd $(PY_TOPDIR); \
-	python $(SETUP_PY) build
+	$(PYTHON) $(SETUP_PY) build
 
 py-install:	$(_SETUP_PY)
 	cd $(PY_TOPDIR); \
-	python $(SETUP_PY) install -O1 \
+	$(PYTHON) $(SETUP_PY) install -O1 \
 		--root $(DESTDIR) \
 		--prefix $(PREFIX) \
 		--exec-prefix $(EXEC_PREFIX) \
@@ -49,7 +53,7 @@ py-install:	$(_SETUP_PY)
 
 py-clean:	$(_SETUP_PY)
 	cd $(PY_TOPDIR); \
-	python $(SETUP_PY) clean; \
+	$(PYTHON) $(SETUP_PY) clean; \
 	rm -f $(SETUP_PY); \
 	rm -rf build
 

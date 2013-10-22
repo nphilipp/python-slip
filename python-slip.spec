@@ -110,7 +110,7 @@ rm -rf %buildroot
 * Mon Oct 22 2012 Nils Philippsen <nils@redhat.com> - 0.2.21-1
 - add slip.util.files.symlink_atomically()
 
-* Fri Nov 28 2011 Nils Philippsen <nils@redhat.com> - 0.2.20-1
+* Fri Nov 04 2011 Nils Philippsen <nils@redhat.com> - 0.2.20-1
 - revert "preserve signature, docstrings, etc. of decorated methods" (#757517)
 
 * Thu Nov 03 2011 Nils Philippsen <nils@redhat.com> - 0.2.19-1

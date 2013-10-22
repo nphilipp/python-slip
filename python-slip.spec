@@ -1,5 +1,5 @@
 Name:       python-slip
-Version:    0.5
+Version:    0.6.0
 Release:    1%{?dist}
 Summary:    Convenience, extension and workaround code for Python 2.x
 
@@ -162,6 +162,13 @@ rm -rf %buildroot
 %{python2_sitelib}/slip.gtk-%{version}-py%{python2_version}.egg-info
 
 %changelog
+* Tue Oct 22 2013 Nils Philippsen <nils@redhat.com> - 0.6.0-1
+- version 0.6.0
+  - support Python 3.x
+  - fix util.hookable hashing, add Hookable.add_hook_hookable()
+- remove our own age-old python directory macros
+- fix changelog date
+
 * Fri Mar 08 2013 Nils Philippsen <nils@redhat.com> - 0.4.0-1
 - version 0.4.0:
   - get rid of (ancient) PolicyKit-0.x support

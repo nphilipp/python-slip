@@ -1,7 +1,7 @@
 Name:       python-slip
 Version:    0.5
 Release:    1%{?dist}
-Summary:    Miscellaneous convenience, extension and workaround code for Python
+Summary:    Convenience, extension and workaround code for Python 2.x
 
 Group:      System Environment/Libraries
 License:    GPLv2+
@@ -12,18 +12,31 @@ BuildArch:  noarch
 
 BuildRequires:  python
 BuildRequires:  python-devel
+BuildRequires:  python3
+BuildRequires:  python3-devel
 
-Requires: libselinux-python
-Requires: python-six
+Requires:   libselinux-python
+Requires:   python-six
 
 %description
-The Simple Library for Python packages contain miscellaneous code for
+The Simple Library for Python 2.x packages contain miscellaneous code for
+convenience, extension and workaround purposes.
+
+This package provides the "slip" and the "slip.util" modules.
+
+%package -n python3-slip
+Summary:    Convenience, extension and workaround code for Python 3.x
+Group:      System Environment/Libraries
+Requires:   libselinux-python3
+
+%description -n python3-slip
+The Simple Library for Python 3.x packages contain miscellaneous code for
 convenience, extension and workaround purposes.
 
 This package provides the "slip" and the "slip.util" modules.
 
 %package dbus
-Summary:    Convenience functions for dbus services
+Summary:    Convenience functions for dbus services in Python 2.x
 Group:      System Environment/Libraries
 Requires:   %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:   dbus-python >= 0.80
@@ -38,7 +51,31 @@ Requires:   python-decorator
 Requires:   python-six
 
 %description dbus
-The Simple Library for Python packages contain miscellaneous code for
+The Simple Library for Python 2.x packages contain miscellaneous code for
+convenience, extension and workaround purposes.
+
+This package provides slip.dbus.service.Object, which is a dbus.service.Object
+derivative that ends itself after a certain time without being used and/or if
+there are no clients anymore on the message bus, as well as convenience
+functions and decorators for integrating a dbus service with PolicyKit.
+
+%package -n python3-slip-dbus
+Summary:    Convenience functions for dbus services in Python 3.x
+Group:      System Environment/Libraries
+Requires:   python3-slip = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:   python3-dbus >= 0.80
+# Don't require any of pygobject2/3 because slip.dbus works with either one. In
+# theory users of slip.dbus should require one or the other anyway to use the
+# main loop.
+#
+# No hard requirement on polkit to allow minimal installs without polkit and
+# its dependencies.
+Conflicts:  PolicyKit < 0.8-3
+Requires:   python3-decorator
+Requires:   python3-six
+
+%description -n python3-slip-dbus
+The Simple Library for Python 3.x packages contain miscellaneous code for
 convenience, extension and workaround purposes.
 
 This package provides slip.dbus.service.Object, which is a dbus.service.Object
@@ -53,21 +90,37 @@ Requires:   %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:   pygtk2
 
 %description gtk
-The Simple Library for Python packages contain miscellaneous code for
+The Simple Library for Python 2.x packages contain miscellaneous code for
 convenience, extension and workaround purposes.
 
 This package provides slip.gtk.set_autowrap(), a convenience function which
 lets gtk labels be automatically re-wrapped upon resizing.
 
+# No python3-slip-gtk because there is no pygtk2 for Python 3.x
+
 %prep
 %setup -q
 
+rm -rf %{py3dir}
+cp -a . %{py3dir}
+find %{py3dir} -name '*.py' -o -name '*.py.in' | xargs sed -i '1s|^#!/usr/bin/python|#!%{__python3}|'
+
+
 %build
-make %{?_smp_mflags}
+make PYTHON=%{__python2} %{?_smp_mflags}
+
+pushd %{py3dir}
+make PYTHON=%{__python3} %{?_smp_mflags}
+popd
 
 %install
 rm -rf %buildroot
-make install DESTDIR=%buildroot
+
+make install PYTHON=%{__python2} DESTDIR=%buildroot
+
+pushd %{py3dir}
+make install PYTHON=%{__python3} DESTDIR=%buildroot
+popd
 
 %clean
 rm -rf %buildroot
@@ -75,22 +128,38 @@ rm -rf %buildroot
 %files
 %defattr(-,root,root,-)
 %doc COPYING doc/dbus
-%dir %{python_sitelib}/slip/
-%{python_sitelib}/slip/__init__.py*
-%{python_sitelib}/slip/util
-%{python_sitelib}/slip/_wrappers
-%{python_sitelib}/slip-%{version}-py%{python_version}.egg-info
+%dir %{python2_sitelib}/slip/
+%{python2_sitelib}/slip/__init__.py*
+%{python2_sitelib}/slip/util
+%{python2_sitelib}/slip/_wrappers
+%{python2_sitelib}/slip-%{version}-py%{python2_version}.egg-info
+
+%files -n python3-slip
+%defattr(-,root,root,-)
+%doc COPYING doc/dbus
+%dir %{python3_sitelib}/slip/
+%{python3_sitelib}/slip/__pycache__
+%{python3_sitelib}/slip/__init__.py*
+%{python3_sitelib}/slip/util
+%{python3_sitelib}/slip/_wrappers
+%{python3_sitelib}/slip-%{version}-py%{python3_version}.egg-info
 
 %files dbus
 %defattr(-,root,root,-)
 %doc doc/dbus/*
-%{python_sitelib}/slip/dbus
-%{python_sitelib}/slip.dbus-%{version}-py%{python_version}.egg-info
+%{python2_sitelib}/slip/dbus
+%{python2_sitelib}/slip.dbus-%{version}-py%{python2_version}.egg-info
+
+%files -n python3-slip-dbus
+%defattr(-,root,root,-)
+%doc doc/dbus/*
+%{python3_sitelib}/slip/dbus
+%{python3_sitelib}/slip.dbus-%{version}-py%{python3_version}.egg-info
 
 %files gtk
 %defattr(-,root,root,-)
-%{python_sitelib}/slip/gtk
-%{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
+%{python2_sitelib}/slip/gtk
+%{python2_sitelib}/slip.gtk-%{version}-py%{python2_version}.egg-info
 
 %changelog
 * Fri Mar 08 2013 Nils Philippsen <nils@redhat.com> - 0.4.0-1

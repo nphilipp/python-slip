@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import sys
 from distutils.core import setup
 
 setup(name="slip", version="@VERSION@",
@@ -16,7 +17,8 @@ setup(name="slip.dbus", version="@VERSION@",
             "slip.dbus.service"],
         requires=["dbus", "decorator", "StringIO", "xml.etree.ElementTree"])
 
-setup(name="slip.gtk", version="@VERSION@",
-        py_modules=["slip.gtk.__init__", "slip.gtk.tools"],
-        requires=["gtk", "pango"])
+if sys.version_info.major == 2:
+    setup(name="slip.gtk", version="@VERSION@",
+            py_modules=["slip.gtk.__init__", "slip.gtk.tools"],
+            requires=["gtk", "pango"])
 

@@ -1,5 +1,5 @@
 Name:       python-slip
-Version:    0.6.0
+Version:    0.7
 Release:    1%{?dist}
 Summary:    Convenience, extension and workaround code for Python 2.x
 

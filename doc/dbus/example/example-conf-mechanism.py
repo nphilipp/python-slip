@@ -46,6 +46,10 @@ if not found:
 # ...BELOW HERE:
 
 
+class ExampleException(Exception):
+    pass
+
+
 class ExampleObject(slip.dbus.service.Object):
 
     def __init__(self, *p, **k):
@@ -73,6 +77,14 @@ And one more."""
     def write(self, config_data):
         print("%s.write ('%s')" % (self, config_data))
         self.config_data = config_data
+
+    @slip.dbus.polkit.require_auth("org.fedoraproject.slip.example.read")
+    @dbus.service.method("org.fedoraproject.slip.example.mechanism",
+                         in_signature="", out_signature="")
+    def raise_exception(self):
+        ex = ExampleException("Booh!")
+        print(ex)
+        raise ex
 
 
 if __name__ == "__main__":

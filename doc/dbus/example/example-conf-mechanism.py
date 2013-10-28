@@ -88,6 +88,8 @@ And one more."""
 
 
 if __name__ == "__main__":
+    debug_gc = "--debug-gc" in sys.argv[1:]
+
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
     bus = dbus.SystemBus()
@@ -98,5 +100,33 @@ if __name__ == "__main__":
 
     mainloop = GLib.MainLoop()
     slip.dbus.service.set_mainloop(mainloop)
+
+    if debug_gc:
+        print("Debugging garbage collector.")
+        from pprint import pformat
+        import gc
+        gc.enable()
+        gc.set_debug(gc.DEBUG_LEAK)
+        gc_timeout = 10
+
+        def gc_collect_iter_no_generator():
+            i = 0
+            while True:
+                yield i
+                i += 1
+
+        gc_collect_iter_no = gc_collect_iter_no_generator()
+
+        def gc_collect():
+            print("\n" + ">"*78 + "\n")
+            print("#%d: garbage objects (%d):\n" % (next(gc_collect_iter_no),
+                                                    len(gc.garbage)))
+            for x in gc.garbage:
+                print("%s\n  %s" % (type(x), pformat(x)))
+            print("\n" + ">"*78 + "\n")
+            return True
+        id = GLib.timeout_add_seconds(gc_timeout, gc_collect)
+        gc_collect()
+
     print("Running example service.")
     mainloop.run()

@@ -3,7 +3,8 @@
 
 from __future__ import absolute_import, print_function
 
-import gobject
+import sys
+from gi.repository import GLib
 
 import dbus
 import dbus.service
@@ -13,7 +14,6 @@ import dbus.mainloop.glib
 
 # try to find the module in the unpacked source tree
 
-import sys
 import os.path
 import import_marker
 
@@ -84,7 +84,7 @@ if __name__ == "__main__":
                                 bus)
     object = ExampleObject(name, "/org/fedoraproject/slip/example/object")
 
-    mainloop = gobject.MainLoop()
+    mainloop = GLib.MainLoop()
     slip.dbus.service.set_mainloop(mainloop)
     print("Running example service.")
     mainloop.run()

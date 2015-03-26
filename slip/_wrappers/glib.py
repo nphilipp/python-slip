@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+# slip._wrappers._glib -- abstract (some) differences between glib and
+# gi.repository.GLib
 #
 # Copyright © 2012, 2015 Red Hat, Inc.
 # Authors:
@@ -17,8 +20,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""This module lets some other slip modules cooperate with either the gobject
-or the gi.repository.GObject modules."""
+"""This module lets some other slip modules cooperate with either the glib
+or the gi.repository.GLib modules."""
 
 import sys
 
@@ -29,17 +32,17 @@ _self = sys.modules[__name__]
 _mod = None
 
 while _mod is None:
-    if 'gi.repository.GObject' in sys.modules:
-        _mod = sys.modules['gi.repository.GObject']
-    elif 'gobject' in sys.modules:
-        _mod = sys.modules['gobject']
-    # if not yet imported, try to import gobject first, then
-    # gi.repository.GObject ...
+    if 'gi.repository.GLib' in sys.modules:
+        _mod = sys.modules['gi.repository.GLib']
+    elif 'glib' in sys.modules:
+        _mod = sys.modules['glib']
+    # if not yet imported, try to import glib first, then
+    # gi.repository.GLib ...
     if _mod is None:
         try:
-            import gobject
+            import glib
         except ImportError:
-            import gi.repository.GObject
+            import gi.repository.GLib
     # ... then repeat.
 
 for what in __all__:

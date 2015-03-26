@@ -25,7 +25,7 @@
 import dbus
 import dbus.service
 
-from slip._wrappers import _gobject as GObject
+from slip._wrappers import _glib as GLib
 
 import polkit
 
@@ -238,9 +238,9 @@ class Object(dbus.service.Object):
             Object.duration = duration
         if not self.persistent or len(Object.senders) == 0:
             if Object.current_source:
-                GObject.source_remove(Object.current_source)
+                GLib.source_remove(Object.current_source)
             Object.current_source = \
-                GObject.timeout_add(Object.duration * 1000,
+                GLib.timeout_add(Object.duration * 1000,
                                     self._timeout_cb)
 
     def sender_seen(self, sender):

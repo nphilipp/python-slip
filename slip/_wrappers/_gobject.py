@@ -3,7 +3,7 @@
 # slip._wrappers._gobject -- abstract (some) differences between gobject and
 # gi.repository.GObject
 #
-# Copyright © 2012 Red Hat, Inc.
+# Copyright © 2012, 2015 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,10 +35,10 @@ _self = sys.modules[__name__]
 _mod = None
 
 while _mod is None:
-    if 'gobject' in sys.modules:
-        _mod = sys.modules['gobject']
-    elif 'gi.repository.GObject' in sys.modules:
+    if 'gi.repository.GObject' in sys.modules:
         _mod = sys.modules['gi.repository.GObject']
+    elif 'gobject' in sys.modules:
+        _mod = sys.modules['gobject']
     # if not yet imported, try to import gobject first, then
     # gi.repository.GObject ...
     if _mod is None:

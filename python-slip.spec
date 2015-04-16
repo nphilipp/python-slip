@@ -162,6 +162,9 @@ rm -rf %buildroot
 %{python2_sitelib}/slip.gtk-%{version}-py%{python2_version}.egg-info
 
 %changelog
+* Thu Apr 16 2015 Nils Philippsen <nils@redhat.com>
+- fix detection of imported gobject flavor (#1194235)
+
 * Tue Oct 22 2013 Nils Philippsen <nils@redhat.com> - 0.6.0-1
 - version 0.6.0
   - support Python 3.x

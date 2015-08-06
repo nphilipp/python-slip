@@ -14,7 +14,7 @@ ifndef SCM_ACTUAL_REMOTE_BRANCH
 endif
 
 ifndef SCM_TAG
-	SCM_TAG = $(PKGNAME)-$(subst .,_,$(PKGVERSION))
+	SCM_TAG = $(PKGNAME)-$(PKGVERSION)
 endif
 
 ifndef DATETIME_CMD

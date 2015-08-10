@@ -1,11 +1,12 @@
 # License: GPL v2 or later
-# Copyright Red Hat Inc. 2008
+# Copyright Red Hat Inc. 2008, 2015
 
 PKGNAME=python-slip
 
-SCM_REMOTEREPO_RE = ^ssh://(.*@)?git.fedorahosted.org/git/$(PKGNAME).git$
+SCM_REMOTEREPO_RE = ^ssh://(.*@)?github.com:nphilipp/$(PKGNAME).git$
 SCM_REMOTE_BRANCH = 0.4.x
-UPLOAD_URL = ssh://fedorahosted.org/$(PKGNAME)
+UPLOAD_METHOD = github
+GITHUB_PROJECT = https://github.com/nphilipp/$(PKGNAME)
 
 PY_SOURCES = $(wildcard slip/*.py slip/dbus/*.py slip/gtk/*.py)
 

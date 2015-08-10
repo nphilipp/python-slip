@@ -14,7 +14,8 @@ endif
 _GH_FILE = $(lastword $(MAKEFILE_LIST))
 _GH_DIR = $(shell dirname "$(_GH_FILE)")
 
-_GH_TOKEN = $(shell cat "$(_GH_DIR)/.github-token")
+_GH_TOKEN_FILE = $(_GH_DIR)/.github-token
+_GH_TOKEN = $(shell cat "$(_GH_TOKEN_FILE)")
 _GH_CURL = curl -s --header 'Authorization: token $(_GH_TOKEN)'
 
 _GH_PROJ = $(shell x="$(GITHUB_PROJECT)"; echo $${x\#*://github.com/})
@@ -39,6 +40,10 @@ $(foreach v,                                        \
 	$(info $(v) = $($(v))))
 
 github-upload:
+	@if [ ! -e "$(_GH_TOKEN_FILE)" ]; then \
+		echo "Github authentication token file '$(_GH_TOKEN_FILE)' missing" >&2; \
+		exit 1; \
+	fi
 	@if ! type -path file >/dev/null; then \
 		echo "'file' binary not found" >&2; \
 		exit 1; \

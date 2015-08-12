@@ -3,8 +3,6 @@
 
 ifdef GITHUB_PROJECT
 
-VARS_OLD := $(filter-out GITHUB_PROJECT,$(.VARIABLES))
-
 ifndef UNSTABLE
 _GH_PRERELEASE = false
 else
@@ -32,12 +30,6 @@ _gh_tagged_rel = $(_GH_CURL) '$(_GH_API_REL)/tags/$(SCM_TAG)'
 
 _gh_tag_rel = $(_GH_CURL) '$(_GH_API_REL)' \
 			  -d '{"prerelease":$(_GH_PRERELEASE),"tag_name":"$(SCM_TAG)","target_commitish":"$(_GH_TAG_COMMITISH)","name":"$(SCM_TAG)"}'
-
-VARS_OLD := $(.VARIABLES)
-
-$(foreach v,                                        \
-	$(filter-out $(VARS_OLD) VARS_OLD,$(.VARIABLES)), \
-	$(info $(v) = $($(v))))
 
 github-upload:
 	@if [ ! -e "$(_GH_TOKEN_FILE)" ]; then \

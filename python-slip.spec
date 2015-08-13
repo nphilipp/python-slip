@@ -95,6 +95,13 @@ rm -rf %buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
+* Thu Aug 13 2015 Nils Philippsen <nils@redhat.com>
+- dbus: listen less aggressively on NameOwnerChanged signals
+- use GLib instead of GObject for wrapper functions (#1202554)
+
+* Thu Apr 16 2015 Nils Philippsen <nils@redhat.com>
+- fix detection of imported gobject flavor (#1194235)
+
 * Fri Mar 08 2013 Nils Philippsen <nils@redhat.com> - 0.4.0-1
 - version 0.4.0:
   - get rid of (ancient) PolicyKit-0.x support

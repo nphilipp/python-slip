@@ -3,7 +3,7 @@
 # slip.dbus.service -- convenience functions for using dbus-activated
 # services
 #
-# Copyright © 2008, 2009 Red Hat, Inc.
+# Copyright © 2008, 2009, 2015 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -254,6 +254,7 @@ class Object(with_metaclass(InterfaceType, dbus.service.Object)):
                 Object.connections_smobjs[self.connection] = \
                     self.connection.add_signal_receiver(
                         handler_function=self._name_owner_changed,
-                        signal_name="NameOwnerChanged",
-                        dbus_interface="org.freedesktop.DBus")
+                        signal_name='NameOwnerChanged',
+                        dbus_interface='org.freedesktop.DBus',
+                        arg1=sender)
             Object.connections_senders[self.connection].add(sender)

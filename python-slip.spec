@@ -162,6 +162,10 @@ rm -rf %buildroot
 %{python2_sitelib}/slip.gtk-%{version}-py%{python2_version}.egg-info
 
 %changelog
+* Thu Aug 13 2015 Nils Philippsen <nils@redhat.com>
+- dbus: listen less aggressively on NameOwnerChanged signals
+- use GLib instead of GObject for wrapper functions (#1202554)
+
 * Thu Apr 16 2015 Nils Philippsen <nils@redhat.com>
 - fix detection of imported gobject flavor (#1194235)
 

@@ -3,7 +3,7 @@
 # slip.dbus.polkit -- convenience decorators and functions for using PolicyKit
 # with dbus services and clients
 #
-# Copyright © 2008, 2009, 2012, 2013 Red Hat, Inc.
+# Copyright © 2008, 2009, 2012, 2013, 2015 Red Hat, Inc.
 # Authors: Nils Philippsen <nils@redhat.com>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -172,9 +172,10 @@ class PolKit(object):
         if not PolKit.__bus:
             PolKit.__bus = dbus.SystemBus()
             PolKit.__signal_receiver = PolKit.__bus.add_signal_receiver(
-                    handler_function = self._on_name_owner_changed,
-                    signal_name='NameOwnerChanged',
-                    dbus_interface='org.freedesktop.DBus')
+                handler_function=self._on_name_owner_changed,
+                signal_name='NameOwnerChanged',
+                dbus_interface='org.freedesktop.DBus',
+                arg0=self._dbus_name)
         return PolKit.__bus
 
     @property

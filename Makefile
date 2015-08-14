@@ -3,7 +3,7 @@
 
 PKGNAME=python-slip
 
-SCM_REMOTEREPO_RE = ^ssh://(.*@)?github.com:nphilipp/$(PKGNAME).git$
+SCM_REMOTEREPO_RE = ^(ssh://(git@)?github.com|(git@)?github.com):nphilipp/$(PKGNAME).git$
 SCM_REMOTE_BRANCH = 0.4.x
 UPLOAD_METHOD = github
 GITHUB_PROJECT = https://github.com/nphilipp/$(PKGNAME)

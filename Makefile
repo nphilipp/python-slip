@@ -4,7 +4,7 @@
 PKGNAME=python-slip
 UNSTABLE=1
 
-SCM_REMOTEREPO_RE = ^ssh://(.*@)?github.com:nphilipp/$(PKGNAME).git$
+SCM_REMOTEREPO_RE = ^(ssh://(git@)?github.com|(git@)?github.com):nphilipp/$(PKGNAME).git$
 UPLOAD_METHOD = github
 GITHUB_PROJECT = https://github.com/nphilipp/$(PKGNAME)
 

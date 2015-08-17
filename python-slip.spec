@@ -11,7 +11,6 @@ Group:      System Environment/Libraries
 License:    GPLv2+
 URL:        https://github.com/nphilipp/python-slip
 Source0:    https://github.com/nphilipp/python-slip/releases/download/python-slip-%{version}/python-slip-%{version}.tar.bz2
-BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:  noarch
 
 BuildRequires:  python
@@ -71,11 +70,7 @@ lets gtk labels be automatically re-wrapped upon resizing.
 make %{?_smp_mflags}
 
 %install
-rm -rf %buildroot
 make install DESTDIR=%buildroot
-
-%clean
-rm -rf %buildroot
 
 %files
 %defattr(-,root,root,-)

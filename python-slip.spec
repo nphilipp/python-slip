@@ -159,6 +159,8 @@ popd
 %changelog
 * Mon Aug 17 2015 Nils Philippsen <nils@redhat.coM> - 0.6.3-1
 - wrap up GObject -> GLib change (#1254077)
+- fix URLs
+- remove some obsolete RPM building cruft
 
 * Thu Aug 13 2015 Nils Philippsen <nils@redhat.com> - 0.6.2-1
 - dbus: listen less aggressively on NameOwnerChanged signals

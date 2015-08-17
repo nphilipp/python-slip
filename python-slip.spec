@@ -9,8 +9,8 @@ Summary:    Miscellaneous convenience, extension and workaround code for Python
 
 Group:      System Environment/Libraries
 License:    GPLv2+
-URL:        http://fedorahosted.org/python-slip
-Source0:    http://fedorahosted.org/released/%{name}/%{name}-%{version}.tar.bz2
+URL:        https://github.com/nphilipp/python-slip
+Source0:    https://github.com/nphilipp/python-slip/releases/download/python-slip-%{version}/python-slip-%{version}.tar.bz2
 BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:  noarch
 

@@ -2,7 +2,7 @@
 
 # slip.dbus.mainloop -- mainloop wrappers
 #
-# Copyright © 2009 Red Hat, Inc.
+# Copyright © 2009, 2015 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -72,8 +72,8 @@ class MainLoop(object):
 class GlibMainLoop(MainLoop):
 
     def __init__(self):
-        from slip._wrappers import _gobject
-        ml = _gobject.MainLoop()
+        from slip._wrappers import _glib
+        ml = _glib.MainLoop()
         ctx = ml.get_context()
 
         self._mainloop = ml

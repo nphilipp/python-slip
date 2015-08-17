@@ -7,7 +7,6 @@ Group:      System Environment/Libraries
 License:    GPLv2+
 URL:        https://github.com/nphilipp/python-slip
 Source0:    https://github.com/nphilipp/python-slip/releases/download/python-slip-%{version}/python-slip-%{version}.tar.bz2
-BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:  noarch
 
 BuildRequires:  python
@@ -114,16 +113,12 @@ make PYTHON=%{__python3} %{?_smp_mflags}
 popd
 
 %install
-rm -rf %buildroot
 
 make install PYTHON=%{__python2} DESTDIR=%buildroot
 
 pushd %{py3dir}
 make install PYTHON=%{__python3} DESTDIR=%buildroot
 popd
-
-%clean
-rm -rf %buildroot
 
 %files
 %defattr(-,root,root,-)

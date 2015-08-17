@@ -1,5 +1,5 @@
 Name:       python-slip
-Version:    0.6.2
+Version:    0.6.3
 Release:    1%{?dist}
 Summary:    Convenience, extension and workaround code for Python 2.x
 
@@ -162,6 +162,9 @@ rm -rf %buildroot
 %{python2_sitelib}/slip.gtk-%{version}-py%{python2_version}.egg-info
 
 %changelog
+* Mon Aug 17 2015 Nils Philippsen <nils@redhat.coM> - 0.6.3-1
+- wrap up GObject -> GLib change (#1254077)
+
 * Thu Aug 13 2015 Nils Philippsen <nils@redhat.com> - 0.6.2-1
 - dbus: listen less aggressively on NameOwnerChanged signals
 - use GLib instead of GObject for wrapper functions (#1202554)

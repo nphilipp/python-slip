@@ -5,3 +5,4 @@
 *.pyo
 
 .github-token
+setup.py

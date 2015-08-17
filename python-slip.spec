@@ -157,6 +157,11 @@ popd
 %{python2_sitelib}/slip.gtk-%{version}-py%{python2_version}.egg-info
 
 %changelog
+* Mon Aug 17 2015 Nils Philippsen <nils@redhat.com>
+- wrap up GObject -> GLib change (#1254077)
+- fix URLs
+- remove some obsolete RPM building cruft
+
 * Thu Aug 13 2015 Nils Philippsen <nils@redhat.com>
 - dbus: listen less aggressively on NameOwnerChanged signals
 - use GLib instead of GObject for wrapper functions (#1202554)

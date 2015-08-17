@@ -157,7 +157,7 @@ popd
 %{python2_sitelib}/slip.gtk-%{version}-py%{python2_version}.egg-info
 
 %changelog
-* Mon Aug 17 2015 Nils Philippsen <nils@redhat.coM> - 0.6.3-1
+* Mon Aug 17 2015 Nils Philippsen <nils@redhat.com> - 0.6.3-1
 - wrap up GObject -> GLib change (#1254077)
 - fix URLs
 - remove some obsolete RPM building cruft

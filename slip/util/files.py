@@ -2,7 +2,7 @@
 
 # slip.util.files -- file helper functions
 #
-# Copyright © 2009, 2010, 2012 Red Hat, Inc.
+# Copyright © 2009, 2010, 2012, 2015 Red Hat, Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,9 +33,9 @@ __all__ = ["issamefile", "linkfile", "copyfile", "linkorcopyfile",
 
 import os
 import selinux
-import shutil
 import tempfile
 import errno
+import stat
 
 BLOCKSIZE = 1024
 
@@ -109,7 +109,7 @@ def copyfile(srcpath, dstpath, copy_mode_from_dst=True, run_restorecon=True):
     dsttmpfile = tempfile.NamedTemporaryFile(
         prefix=dstbname + os.path.extsep, dir=dstdname, delete=False)
 
-    mode_copied = False
+    s = os.stat(srcpath)
 
     if copy_mode_from_dst:
 
@@ -117,13 +117,11 @@ def copyfile(srcpath, dstpath, copy_mode_from_dst=True, run_restorecon=True):
         # otherwise fall back to copying it from the source file below)
 
         try:
-            shutil.copymode(dstpath, dsttmpfile.name)
-            mode_copied = True
-        except (shutil.Error, OSError):
+            s = os.stat(dstpath)
+        except OSError:
             pass
 
-    if not mode_copied:
-        shutil.copymode(srcpath, dsttmpfile.name)
+    os.fchmod(dsttmpfile.fileno(), stat.S_IMODE(s.st_mode))
 
     data = None
 
@@ -255,7 +253,8 @@ def overwrite_safely(path, content, preserve_mode=True, preserve_context=True):
                                        dir=dir_)
 
         if exists and preserve_mode:
-            shutil.copymode(path, tmpname)
+            s = os.stat(path)
+            os.fchmod(fd, stat.S_IMODE(s.st_mode))
 
         if exists and preserve_context:
             ret, ctx = selinux.getfilecon(path)

@@ -1,5 +1,5 @@
 Name:       python-slip
-Version:    0.6.3
+Version:    0.6.4
 Release:    1%{?dist}
 Summary:    Convenience, extension and workaround code for Python 2.x
 
@@ -157,7 +157,7 @@ popd
 %{python2_sitelib}/slip.gtk-%{version}-py%{python2_version}.egg-info
 
 %changelog
-* Fri Sep 18 2015 Nils Philippsen <nils@redhat.com>
+* Fri Sep 18 2015 Nils Philippsen <nils@redhat.com> - 0.6.4-1
 - util.files.overwrite_safely(): preserve ownership
 
 * Mon Aug 17 2015 Nils Philippsen <nils@redhat.com> - 0.6.3-1

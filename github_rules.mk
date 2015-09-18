@@ -62,7 +62,7 @@ github-upload:
 			--header "Content-Type: $$mimetype" \
 			--header "Accept: application/vnd.github.manifold-preview" \
 			--data-binary "@$(PKGARCHIVE)" \
-			"$${upload_url%\{\?name\}}?name=$(PKGARCHIVE)")"; \
+			"$${upload_url%\{\?*}?name=$(PKGARCHIVE)")"; \
 		if [ "$$(echo "$$upload_out" | jq .state)" = "\"uploaded\"" ]; then \
 			echo done; \
 		else \

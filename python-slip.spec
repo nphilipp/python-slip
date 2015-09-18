@@ -157,6 +157,9 @@ popd
 %{python2_sitelib}/slip.gtk-%{version}-py%{python2_version}.egg-info
 
 %changelog
+* Fri Sep 18 2015 Nils Philippsen <nils@redhat.com>
+- util.files.overwrite_safely(): preserve ownership
+
 * Mon Aug 17 2015 Nils Philippsen <nils@redhat.com>
 - wrap up GObject -> GLib change (#1254077)
 - fix URLs

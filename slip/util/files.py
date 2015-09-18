@@ -230,10 +230,12 @@ def symlink_atomically(srcpath, dstpath, force=False, preserve_context=True):
             selinux.restorecon(dstpath)
 
 
-def overwrite_safely(path, content, preserve_mode=True, preserve_context=True):
+def overwrite_safely(
+        path, content, preserve_mode=True, preserve_context=True,
+        preserve_ownership=True):
     """Safely overwrite a file by creating a temporary file in the same
     directory, writing it, moving it over the original file, eventually
-    preserving file mode and SELinux context."""
+    preserving file mode, SELinux context and ownership."""
 
     path = os.path.realpath(path)
     dir_ = os.path.dirname(path)
@@ -252,14 +254,19 @@ def overwrite_safely(path, content, preserve_mode=True, preserve_context=True):
         fd, tmpname = tempfile.mkstemp(prefix=base + os.path.extsep,
                                        dir=dir_)
 
-        if exists and preserve_mode:
+        if exists:
             s = os.stat(path)
-            os.fchmod(fd, stat.S_IMODE(s.st_mode))
 
-        if exists and preserve_context:
-            ret, ctx = selinux.getfilecon(path)
-            if ret < 0:
-                raise RuntimeError("getfilecon(%r) failed" % path)
+            if preserve_ownership:
+                os.fchown(fd, s.st_uid, s.st_gid)
+
+            if preserve_mode:
+                os.fchmod(fd, stat.S_IMODE(s.st_mode))
+
+            if preserve_context:
+                ret, ctx = selinux.getfilecon(path)
+                if ret < 0:
+                    raise RuntimeError("getfilecon(%r) failed" % path)
 
         f = os.fdopen(fd, "w")
         fd = None

@@ -187,17 +187,17 @@ class PolKit(object):
     @property
     def _interface(self):
         if not PolKit.__interface:
-            PolKit.__interface = dbus.Interface(self._bus.get_object(
-                self._dbus_name, self._dbus_path),
-                self._dbus_interface)
+            try:
+                PolKit.__interface = dbus.Interface(self._bus.get_object(
+                    self._dbus_name, self._dbus_path),
+                    self._dbus_interface)
+            except dbus.DBusException:
+                pass
         return PolKit.__interface
 
     @property
     def _polkit_present(self):
-        try:
-            return bool(self._interface)
-        except dbus.DBusException:
-            return False
+        return bool(self._interface)
 
     def __dbus_system_bus_name_uid(self, system_bus_name):
         bus_object = self._bus.get_object('org.freedesktop.DBus',
@@ -238,8 +238,9 @@ class PolKit(object):
         challenge=True, details={}):
 
         if not self._polkit_present:
-            reply_handler(action_id is None or
-                    self.__dbus_system_bus_name_uid(system_bus_name) == 0)
+            return reply_handler(
+                action_id is None or
+                self.__dbus_system_bus_name_uid(system_bus_name) == 0)
 
         flags = 0
         if challenge:

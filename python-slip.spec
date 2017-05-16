@@ -3,7 +3,7 @@
 %{!?python_version: %global python_version %(%{__python} -c "from distutils.sysconfig import get_python_version; print get_python_version()")}
 
 Name:       python-slip
-Version:    0.4.0
+Version:    0.4.1
 Release:    1%{?dist}
 Summary:    Miscellaneous convenience, extension and workaround code for Python
 
@@ -90,16 +90,19 @@ make install DESTDIR=%buildroot
 %{python_sitelib}/slip.gtk-%{version}-py%{python_version}.egg-info
 
 %changelog
-* Mon Aug 17 2015 Nils Philippsen <nils@redhat.com>
+* Tue May 16 2017 Nils Philippsen <nils@redhat.com> - 0.4.1-1
+- cope better with missing polkitd (#1393488)
+
+* Mon Aug 17 2015 Nils Philippsen <nils@redhat.com> - 0.4.1-1
 - wrap up GObject -> GLib change (#1254077)
 - fix URLs
 - remove some obsolete RPM building cruft
 
-* Thu Aug 13 2015 Nils Philippsen <nils@redhat.com>
+* Thu Aug 13 2015 Nils Philippsen <nils@redhat.com> - 0.4.1-1
 - dbus: listen less aggressively on NameOwnerChanged signals
 - use GLib instead of GObject for wrapper functions (#1202554)
 
-* Thu Apr 16 2015 Nils Philippsen <nils@redhat.com>
+* Thu Apr 16 2015 Nils Philippsen <nils@redhat.com> - 0.4.1-1
 - fix detection of imported gobject flavor (#1194235)
 
 * Fri Mar 08 2013 Nils Philippsen <nils@redhat.com> - 0.4.0-1

@@ -23,7 +23,7 @@
 """This module contains variants of certain base types which call registered
 hooks on changes."""
 
-import collections
+import collections.abc
 from six import with_metaclass
 
 __all__ = ["Hookable", "HookableSet"]
@@ -67,7 +67,7 @@ class _HookEntry(object):
 
     def __init__(self, hook, args, kwargs, hookable=None):
 
-        assert(isinstance(hook, collections.Callable))
+        assert(isinstance(hook, collections.abc.Callable))
         assert(isinstance(hookable, Hookable))
 
         for n, x in enumerate(args):
@@ -174,7 +174,7 @@ class Hookable(with_metaclass(HookableType, object)):
         self.__add_hook(hook, self, *args, **kwargs)
 
     def __add_hook(self, hook, _hookable, *args, **kwargs):
-        assert isinstance(hook, collections.Callable)
+        assert isinstance(hook, collections.abc.Callable)
         assert isinstance(_hookable, Hookable)
         hookentry = _HookEntry(hook, args, kwargs, hookable=_hookable)
         self.__hooks__.add(hookentry)

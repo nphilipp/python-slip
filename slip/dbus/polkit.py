@@ -26,7 +26,7 @@ PolicyKit with dbus services and clients."""
 
 from __future__ import absolute_import
 
-import collections
+import collections.abc
 import dbus
 from decorator import decorator
 from functools import reduce
@@ -103,14 +103,14 @@ def enable_proxy(
             def some_method(self, ...):
                 ..."""
 
-    assert(func is None or isinstance(func, collections.Callable))
+    assert(func is None or isinstance(func, collections.abc.Callable))
 
     assert(
         authfail_result in (None, AUTHFAIL_DONTCATCH) or
         authfail_exception is None)
     assert(
         authfail_callback is None or
-        isinstance(authfail_callback, collections.Callable))
+        isinstance(authfail_callback, collections.abc.Callable))
     assert(
         authfail_exception is None or
         issubclass(authfail_exception, Exception))

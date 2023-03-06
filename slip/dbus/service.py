@@ -224,11 +224,12 @@ class Object(with_metaclass(InterfaceType, dbus.service.Object)):
         if not new_owner and (old_owner, conn) in Object.senders:
             Object.senders.remove((old_owner, conn))
             Object.connections_senders[conn].remove(old_owner)
+            if old_owner in Object.connections_smobjs:
+                Object.connections_smobjs[old_owner].remove()
+                del Object.connections_smobjs[old_owner]
 
             if len(Object.connections_senders[conn]) == 0:
-                Object.connections_smobjs[conn].remove()
                 del Object.connections_senders[conn]
-                del Object.connections_smobjs[conn]
 
             if not self.persistent and len(Object.senders) == 0 and \
                     Object.current_source is None:
@@ -251,10 +252,10 @@ class Object(with_metaclass(InterfaceType, dbus.service.Object)):
             Object.senders.add((sender, self.connection))
             if self.connection not in Object.connections_senders:
                 Object.connections_senders[self.connection] = set()
-                Object.connections_smobjs[self.connection] = \
-                    self.connection.add_signal_receiver(
-                        handler_function=self._name_owner_changed,
-                        signal_name='NameOwnerChanged',
-                        dbus_interface='org.freedesktop.DBus',
-                        arg1=sender)
+            Object.connections_smobjs[sender] = \
+                self.connection.add_signal_receiver(
+                    handler_function=self._name_owner_changed,
+                    signal_name='NameOwnerChanged',
+                    dbus_interface='org.freedesktop.DBus',
+                    arg1=sender)
             Object.connections_senders[self.connection].add(sender)

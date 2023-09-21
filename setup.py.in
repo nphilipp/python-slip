@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from distutils.core import setup
+from setuptools import setup
 
 setup(name="slip", version="@VERSION@",
         py_modules=["slip.__init__", "slip.util.__init__",

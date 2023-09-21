@@ -13,6 +13,8 @@ BuildRequires:  python
 BuildRequires:  python-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
+BuildRequires:  python-setuptools
+BuildRequires:  python3-setuptools
 
 Requires:   libselinux-python
 Requires:   python-six
